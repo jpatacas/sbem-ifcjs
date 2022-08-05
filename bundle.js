@@ -112708,9 +112708,16 @@ viewer.grid.setGrid();
 
 //const currentProject = projects.find(project => project.id === currentProjectID); //get bimserver project id here and get latest revision
 
+const socket = io("http://localhost:8088/"); //the node.js server
 
+socket.on("hello", (arg) => {
+    console.log(arg);
+});
 
+socket.emit("howdy", "stranger");
 //let ifcUrl;
+
+socket.emit("createProject", "createProject");//create project
 
 async function loadIfc(url) {
     // Load the model
@@ -112721,7 +112728,8 @@ await viewer.shadowDropper.renderShadow(model.modelID);
 viewer.context.renderer.postProduction.active = true;
 }
 
-let path = "http://localhost:8088/testmodel.ifc";
+let path = "http://localhost:8088/testmodel.ifc"; // get path into this
+
 
 loadIfc(path);
 
@@ -112738,6 +112746,7 @@ createPropertiesMenu(props);
 
 };
 
+//get ifc properties, need to add the html element etc..
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
 
