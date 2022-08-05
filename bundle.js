@@ -112714,10 +112714,10 @@ socket.on("hello", (arg) => {
     console.log(arg);
 });
 
-socket.emit("howdy", "stranger");
+//socket.emit("howdy", "stranger");
 //let ifcUrl;
 
-socket.emit("createProject", "createProject");//create project
+//socket.emit("createProject", "createProject");//create project
 
 async function loadIfc(url) {
     // Load the model

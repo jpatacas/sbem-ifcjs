@@ -2,9 +2,6 @@ import { Color } from "three";
 import { IfcViewerAPI } from "web-ifc-viewer";
 import { projects } from "./projects";
 
-
-
-
 const container = document.getElementById('viewer-container');
 const viewer = new IfcViewerAPI({container, backgroundColor: new Color(255,255,255)}); //white
 
@@ -23,10 +20,10 @@ socket.on("hello", (arg) => {
     console.log(arg);
 })
 
-socket.emit("howdy", "stranger");
+//socket.emit("howdy", "stranger");
 //let ifcUrl;
 
-socket.emit("createProject", "createProject");//create project
+//socket.emit("createProject", "createProject");//create project
 
 async function loadIfc(url) {
     // Load the model
