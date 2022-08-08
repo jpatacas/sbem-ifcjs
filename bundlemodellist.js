@@ -1,7 +1,6 @@
 //create a section element and create the divs inside
 
-
-function createCardDiv() {
+function createCardDiv(projectName, projectId) {
     const card = document.createElement('div');
     card.className = "card";
 
@@ -17,43 +16,41 @@ function createCardDiv() {
     card.appendChild(svgElement);
 
     const h2Element = document.createElement('h2');
-    h2Element.textContent = "Sample project";
+    h2Element.textContent = projectName;
     
     card.appendChild(h2Element);
 
     const button = document.createElement('a');
     button.className = 'button';
-    button.href= './bimviewer.html'; //also needs to be an input
+    button.href = './bimviewer.html' + `?id=${projectId}`;
+    //button.href= projectId; //also needs to be an input
     button.textContent = "Model";
 
     card.appendChild(button);
 
-    //on click (button)
-    // map.flyTo({
-    //     center: e.features[0].geometry.coordinates,
-    //     zoom: 16,
-    //     speed: 2,
-    //     curve: 1,
-    //     easing(t) {
-    //         return t;
-    //     }
-    // });
-
-    return card;
+    const projectContainer = document.getElementById("projects-container");
+    projectContainer.appendChild(card);
 
 }
 
-function createSection () {
-    const section = document.createElement('section');
-    section.className = "project-list";
+// export function createSection () {
+//     const section = document.createElement('section');
+//     section.className = "project-list";
     
-    let card1 = createCardDiv(); //needs to be a array?
-    let card2 = createCardDiv();
+//     let card1 = createCardDiv(); //needs to be a array?
+//     let card2 = createCardDiv();
 
-    section.appendChild(card1);
-    section.appendChild(card2);
-    document.body.appendChild(section);
-}
+//     section.appendChild(card1);
+//     section.appendChild(card2);
+//     document.body.appendChild(section);
+// }
+
+function buildMap (keys, values) {
+    const map = new Map();
+    for(let i = 0; i < keys.length; i++){
+       map.set(keys[i], values[i]);
+    }    return map;
+ }
 
 //get list of projects from bimserver, create a card for each project
 
@@ -65,18 +62,18 @@ socket.on("hello", (arg) => {
 
 socket.emit("getProjects", "getProjects");
 
-createSection();
-
 console.log("hello model list");
 
+socket.on("projectIds",(resname, reslist) => {
 
-socket.on("projectIds",(arg) => {
+    let projectsMap = buildMap(resname, reslist);
 
-    //create section here with id = args
-    
+    projectsMap.forEach(function (value, key) {
+        createCardDiv(key, value);
+    });
 
-    console.log(arg); 
-    console.log("projectIds");
+    console.log(resname + reslist); 
+    //console.log("projectIds")
 
 }
 );

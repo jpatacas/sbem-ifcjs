@@ -112702,9 +112702,10 @@ const viewer = new IfcViewerAPI({container, backgroundColor: new Color(255,255,2
 viewer.axes.setAxes();
 viewer.grid.setGrid();
 
-// const currentUrl = window.location.href;
-// const url = new URL(currentUrl);
-// const currentProjectID = url.searchParams.get("id");
+const currentUrl = window.location.href;
+const url = new URL(currentUrl);
+const currentProjectID = url.searchParams.get("id"); //bimserver project id - use this to get latest revision etc
+console.log(currentProjectID);
 
 //const currentProject = projects.find(project => project.id === currentProjectID); //get bimserver project id here and get latest revision
 
@@ -112719,6 +112720,8 @@ socket.on("hello", (arg) => {
 
 //socket.emit("createProject", "createProject");//create project
 
+socket.emit("getLatestRevision", currentProjectID);
+
 async function loadIfc(url) {
     // Load the model
 const model = await viewer.IFC.loadIfcUrl(url);
@@ -112728,10 +112731,14 @@ await viewer.shadowDropper.renderShadow(model.modelID);
 viewer.context.renderer.postProduction.active = true;
 }
 
-let path = "http://localhost:8088/testmodel.ifc"; // get path into this
+socket.on("fileName", (fileName) =>{
+    let path = "http://localhost:8088/" + fileName;
+    loadIfc(path);
+    console.log(path);
+});
 
-
-loadIfc(path);
+// let path = "http://localhost:8088/testmodel.ifc"; // get path into this
+// loadIfc(path);
 
 //window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();

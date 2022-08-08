@@ -1,4 +1,4 @@
-import {createSection} from './overlay.js';
+import {buildMap, createCardDiv, createSection} from './overlay.js';
 
 //get list of projects from bimserver, create a card for each project
 
@@ -10,18 +10,18 @@ socket.on("hello", (arg) => {
 
 socket.emit("getProjects", "getProjects");
 
-createSection();
-
 console.log("hello model list")
 
+socket.on("projectIds",(resname, reslist) => {
 
-socket.on("projectIds",(arg) => {
+    let projectsMap = buildMap(resname, reslist);
 
-    //create section here with id = args
-    
+    projectsMap.forEach(function (value, key) {
+        createCardDiv(key, value);
+    });
 
-    console.log(arg) 
-    console.log("projectIds")
+    console.log(resname + reslist) 
+    //console.log("projectIds")
 
 }
 )
