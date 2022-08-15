@@ -51,6 +51,10 @@ a {
     bottom: 1rem;
 }
 
+.top {
+    top: 1rem;
+}
+
 .spinning {
     animation: logo-spin 8s infinite 0s cubic-bezier(0.38, 0.01, 0, 0.99);
   }
@@ -91,7 +95,7 @@ a {
     flex-direction: row;
 }
 
-.toolbar a {
+.toolbar button {
     margin: 0.5rem;
 }
 
@@ -187,6 +191,11 @@ a {
     background: var(--translucent-white);
     box-shadow: var(--normal-shadow);
     backdrop-filter: var(--blur-filter);
+}
+
+.active {
+    background-color: var(--light-blue);
+    fill: white;
 }
 
 #viewer-container {
