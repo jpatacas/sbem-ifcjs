@@ -171,10 +171,11 @@ function detailButton() { //need individual class names for buttons?
 
 }
 
-function propertiesButton() {
+function propertiesButton() { //toggle on off properties
 
     const propertiesButton = document.createElement("button");
     propertiesButton.className = "button";
+    propertiesButton.id = "propertiesButton";
 
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgEl.setAttribute("width", "15");
@@ -186,6 +187,21 @@ function propertiesButton() {
 
     svgEl.appendChild(path1);
     propertiesButton.appendChild(svgEl);
+
+    //let propertiesVisible = true;
+    let mouseDown = false;
+    //events to switch between views
+    propertiesButton.addEventListener("click", function() {
+        if (mouseDown === false) {
+            mouseDown = true;
+            document.getElementById("ifc-property-menu").style.display = "none";
+            propertiesButton.classList.remove("active");
+        } else if (mouseDown === true) {
+            mouseDown = false;
+            document.getElementById("ifc-property-menu").style.display = "initial";
+            propertiesButton.classList.add("active");
+        }
+        }, false);
 
     return propertiesButton;
 
