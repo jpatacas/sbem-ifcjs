@@ -18,6 +18,8 @@ const categoriesText = [
 "M4 22h-4v-4h4v4zm0-12h-4v4h4v-4zm0-8h-4v4h4v-4zm3 0v4h17v-4h-17zm0 12h17v-4h-17v4zm0 8h17v-4h-17v4z",
 "M1.438 16.873l-1.438 7.127 7.127-1.437 16.874-16.872-5.69-5.69-16.873 16.872zm1.12 4.572l.722-3.584 2.86 2.861-3.582.723zm18.613-15.755l-13.617 13.617-2.86-2.861 13.617-13.617 2.86 2.861z"]
 
+
+//needs to be fixed, it is over other html elements!
 export function modelName (modelName) {
     const modelNameContainer = document.createElement('div');
     modelNameContainer.className = "simple-card-container top";
@@ -64,12 +66,12 @@ export function toolbar() { //need to get the functions from the three js projec
     //     toolbar.appendChild(button(svgpath));
     // }
 
-    toolbar.appendChild(detailButton());
-    toolbar.appendChild(propertiesButton());
-    toolbar.appendChild(clipPlaneButton());
+    toolbar.appendChild(homeButton());
     toolbar.appendChild(treeButton());
+    toolbar.appendChild(filterButton());
+    toolbar.appendChild(clipPlaneButton());
     toolbar.appendChild(annotationsButton());
-
+    toolbar.appendChild(propertiesButton());
 
     cardContainer.appendChild(toolbar);
 
@@ -150,11 +152,13 @@ export function createCardDiv(projectName, projectId) {
 //     section.appendChild(card2);
 //     document.body.appendChild(section);
 // }
+function homeButton() {
 
-function detailButton() { //need individual class names for buttons?
+    const homeButton= document.createElement("a"); //should these be buttons instead of 'a'?
+    homeButton.className = "button";
 
-    const detailButton = document.createElement("button"); //should these be buttons instead of 'a'?
-    detailButton.className = "button";
+    homeButton.href = "./index.html";
+    //filterButton.
 
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgEl.setAttribute("width", "15");
@@ -162,12 +166,32 @@ function detailButton() { //need individual class names for buttons?
     svgEl.setAttribute("viewBox", "0 0 24 24");
 
     const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", svgPaths[0]);
+    path1.setAttribute("d", svgPaths[0]); //change icon here
 
     svgEl.appendChild(path1);
-    detailButton.appendChild(svgEl);
+    homeButton.appendChild(svgEl);
 
-    return detailButton;
+    return homeButton;
+
+}
+
+function filterButton() { //need individual class names for buttons?
+
+    const filterButton = document.createElement("button"); //should these be buttons instead of 'a'?
+    filterButton.className = "button";
+
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("width", "15");
+    svgEl.setAttribute("height", "15");
+    svgEl.setAttribute("viewBox", "0 0 24 24");
+
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path1.setAttribute("d", svgPaths[0]); //add svg
+
+    svgEl.appendChild(path1);
+    filterButton.appendChild(svgEl);
+
+    return filterButton;
 
 }
 
@@ -243,6 +267,21 @@ function treeButton() {
 
     svgEl.appendChild(path1);
     treeButton.appendChild(svgEl);
+
+    let mouseDown = false;
+    //events to switch between views
+    treeButton.addEventListener("click", function() {
+        if (mouseDown === false) {
+            mouseDown = true;
+            document.getElementById("ifc-tree-menu").style.display = "none";
+            treeButton.classList.remove("active");
+        } else if (mouseDown === true) {
+            mouseDown = false;
+            document.getElementById("ifc-tree-menu").style.display = "initial";
+            treeButton.classList.add("active");
+        }
+        }, false);
+
 
     return treeButton;
 
