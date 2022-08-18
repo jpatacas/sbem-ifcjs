@@ -101,6 +101,11 @@ a {
     margin: 0.5rem;
 }
 
+.checkboxes {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
 
 /* From uiverse.io by @fanishah */
 .card {
