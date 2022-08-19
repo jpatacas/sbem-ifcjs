@@ -192,6 +192,7 @@ function filterButton() { //need individual class names for buttons?
          {
              document.getElementById("checkboxes").style.display = "none";
              filterButton.classList.remove("active");
+             //reset filter here?
          }
          else if (document.getElementById("checkboxes").style.display === "none")
          {
@@ -331,6 +332,7 @@ function annotationsButton() {
 
     const annotationsButton = document.createElement("button");
     annotationsButton.className = "button";
+    annotationsButton.id = "annotationsButton";
 
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgEl.setAttribute("width", "15");
@@ -342,6 +344,7 @@ function annotationsButton() {
 
     svgEl.appendChild(path1);
     annotationsButton.appendChild(svgEl);
+
 
     return annotationsButton;
 

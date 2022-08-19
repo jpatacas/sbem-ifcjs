@@ -47,7 +47,7 @@ function buildMap (keys, values) {
 
 //local
 //const socket = io("http://localhost:8088/");
-const socket = io("http://192.168.236.229:8088/");
+const socket = io("http://localhost:8088/");
 
 //aws
 //const socket = io("http://13.40.172.106:8088/");

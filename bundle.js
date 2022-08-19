@@ -112714,7 +112714,7 @@ function toolbar() { //need to get the functions from the three js project... (c
     toolbar.appendChild(treeButton());
     toolbar.appendChild(filterButton());
     toolbar.appendChild(clipPlaneButton());
-    toolbar.appendChild(annotationsButton());
+    toolbar.appendChild(annotationsButton$1());
     toolbar.appendChild(propertiesButton$1());
 
     cardContainer.appendChild(toolbar);
@@ -112780,6 +112780,7 @@ function filterButton() { //need individual class names for buttons?
          {
              document.getElementById("checkboxes").style.display = "none";
              filterButton.classList.remove("active");
+             //reset filter here?
          }
          else if (document.getElementById("checkboxes").style.display === "none")
          {
@@ -112910,10 +112911,11 @@ function treeButton() {
 
 }
 
-function annotationsButton() {
+function annotationsButton$1() {
 
     const annotationsButton = document.createElement("button");
     annotationsButton.className = "button";
+    annotationsButton.id = "annotationsButton";
 
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
     svgEl.setAttribute("width", "15");
@@ -112926,11 +112928,12 @@ function annotationsButton() {
     svgEl.appendChild(path1);
     annotationsButton.appendChild(svgEl);
 
+
     return annotationsButton;
 
 }
 
-const socketiourl = "http://192.168.236.229:8088/"; //edit socket.io url here
+const socketiourl = "http://localhost:8088/"; //edit socket.io url here
 
 // List of categories names
 const categories = {
@@ -112940,7 +112943,8 @@ const categories = {
     IFCDOOR,
     IFCWINDOW,
     IFCPLATE,
-    IFCMEMBER
+    IFCMEMBER,
+    IFCSPACE
   };
 
 const container = document.getElementById("viewer-container");
@@ -112957,25 +112961,7 @@ const url = new URL(currentUrl);
 const currentProjectID = url.searchParams.get("id"); //bimserver project id - use this to get latest revision etc
 //console.log(currentProjectID);
 
-//const currentProject = projects.find(project => project.id === currentProjectID); //get bimserver project id here and get latest revision
-
-//local
-//const socket = io("http://localhost:8088/"); //the node.js server
 const socket = io(socketiourl);
-
-//aws
-
-//const socket = io(socketiourl);
-
-// socket.on("hello", (arg) => {
-//     console.log(arg);
-// })
-
-//socket.emit("howdy", "stranger");
-//let ifcUrl;
-
-//socket.emit("createProject", "createProject");//create project
-
 
 //otherwise socket app will crash 
 if (currentProjectID !== null)
@@ -113009,7 +112995,7 @@ socket.on("fileName", (fileName) => {
 
 const scene = viewer.context.getScene(); //for showing/hiding categories
 
-//  let path = "http://localhost:8088/testmodel.ifc"; // get path into this
+//  let path = "./models/rac_basic_sample_project.ifc"; // get path into this
 //  loadIfc(path);
 
 //window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
@@ -113058,6 +113044,7 @@ clipButton.onclick = () => {
 };
 
 //on right mouse click
+
 window.onauxclick = () => {
     if (clippingPlanesActive) {
       viewer.clipper.createPlane();
@@ -113070,6 +113057,44 @@ window.onkeydown = (event) => {
     viewer.clipper.deleteAllPlanes();
   }
 };
+
+//notes measurements
+
+const annotationsButton = document.getElementById("annotationsButton");
+let measurementsActive = false;
+
+annotationsButton.onclick = () => {
+
+    viewer.dimensions.active = true;
+    viewer.dimensions.previewActive = true;
+    measurementsActive = !measurementsActive;
+
+    if (measurementsActive) {
+        annotationsButton.classList.add("active");
+    } else {
+        annotationsButton.classList.remove("active");
+        viewer.dimensions.active = false;
+        viewer.dimensions.previewActive = false;
+    }
+
+};
+
+//can have the same event for 2 different buttons? (clip planes not working like this)
+//if button is active (get by class?)
+
+window.onauxclick = () => {
+    if (measurementsActive)
+    {
+        viewer.dimensions.create();
+    }
+};
+
+window.onkeydown = (event) => {
+    if(event.code === 'Delete' && measurementsActive) {
+        viewer.dimensions.delete();
+    }
+};
+
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
@@ -113212,7 +113237,7 @@ function createSimpleChild(parent, node) {
 }
 
 
-//IFC properties menu functions
+//IFC properties menu functions - crete tabs here https://www.w3schools.com/howto/howto_js_tabs.asp
 function createPropertiesMenu(properties) {
     //console.log(properties);
   
