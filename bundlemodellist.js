@@ -33,19 +33,29 @@ function createCardDiv(projectName, projectId) {
 
 }
 
-// https://www.tutorialspoint.com/building-a-map-from-2-arrays-of-values-and-keys-in-javascript
-function buildMap (keys, values) {
-    const map = new Map();
-    for(let i = 0; i < keys.length; i++){
-       map.set(keys[i], values[i]);
-    }    return map;
- }
+//make golabl and import here and bimserver.js
+const projects = [ {
+    name: "A-MEP",
+    id: "3145729"
+}, {
+    name: "TESTED_Simple_project_01",
+    id : "2883585"
+}, {
+    name: "TESTED_Simple_project_02",
+    id: "2949121"
+}, {
+    name: "rac_advanced_sample_project",
+    id: "3080193"
+}, {
+    name: "rac_basic_sample_project",
+    id: "3014657"
+}];
 
 //get list of projects from bimserver, create a card for each project
 
 //local
 //const socket = io("http://localhost:8088/");
-const socket = io("http://localhost:8088/");
+//const socket = io("http://localhost:8088/");
 
 //aws
 //const socket = io("http://13.40.172.106:8088/");
@@ -55,22 +65,33 @@ const socket = io("http://localhost:8088/");
 //     console.log(arg);
 // })
 
-socket.emit("getProjects", "getProjects"); //get projects from a bimserver
+//socket.emit("getProjects", "getProjects"); //get projects from a bimserver
 
 // console.log("hello model list")
 
+//proj map
+// let projnames = ["A-MEP","TESTED_Simple_project_01","TESTED_Simple_project_02","rac_advanced_sample_project","rac_basic_sample_project"];
+// let projids = ["3145729","2883585","2949121","3080193","3014657"];
+
+
+
+for (let proj of projects)
+{
+    createCardDiv(proj.name, proj.id);
+    console.log(proj.name, proj.id);
+}
 
 //need to build the projects map for locally hosted files instead of bimserver...
-socket.on("projectIds",(resname, reslist) => {
+// socket.on("projectIds",(resname, reslist) => {
 
-    let projectsMap = buildMap(resname, reslist);
+//     let projectsMap = buildMap(resname, reslist);
 
-    projectsMap.forEach(function (value, key) {
-        createCardDiv(key, value);
-    });
+//     projectsMap.forEach(function (value, key) {
+//         createCardDiv(key, value);
+//     });
 
-    console.log(resname + reslist); 
-    //console.log("projectIds")
+//     console.log(resname + reslist) 
+//     //console.log("projectIds")
 
-}
-);
+// }
+// )

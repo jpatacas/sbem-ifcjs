@@ -113046,7 +113046,23 @@ function createIfcPropertyMenu() {
 
 }
 
-const socketiourl = "http://localhost:8088/"; //edit socket.io url here
+//make golabl and import here and bimserver.js
+const projects = [ {
+    name: "A-MEP",
+    id: "3145729"
+}, {
+    name: "TESTED_Simple_project_01",
+    id : "2883585"
+}, {
+    name: "TESTED_Simple_project_02",
+    id: "2949121"
+}, {
+    name: "rac_advanced_sample_project",
+    id: "3080193"
+}, {
+    name: "rac_basic_sample_project",
+    id: "3014657"
+}];
 
 // List of categories names 
 const categories = {
@@ -113077,14 +113093,14 @@ const url = new URL(currentUrl);
 const currentProjectID = url.searchParams.get("id"); //bimserver project id - use this to get latest revision etc
 //console.log(currentProjectID);
 
-const socket = io(socketiourl);
+//const socket = io(socketiourl);
 
 //otherwise socket app will crash 
-if (currentProjectID !== null)
-    {
-        console.log("getting latest revision", currentProjectID);
-        socket.emit("getLatestRevision", currentProjectID);
-    }
+// if (currentProjectID !== null)
+//     {
+//         console.log("getting latest revision", currentProjectID);
+//         socket.emit("getLatestRevision", currentProjectID);
+//     }
 
 async function loadIfc(url) {
   // Load the model
@@ -113103,20 +113119,41 @@ async function loadIfc(url) {
 
 }
 //loads the model -
-socket.on("fileName", (fileName) => {
-  let path = socketiourl + fileName; //change here too or make it global variable
-  loadIfc(path);
-  //console.log(path);
-});
+// socket.on("fileName", (fileName) => {
+//   let path = socketiourl + fileName; //change here too or make it global variable
+//   loadIfc(path);
+//   //console.log(path);
+// });
 
 //const resultJson = await viewer.IFC.properties.serializeAllProperties()
 
 
 const scene = viewer.context.getScene(); //for showing/hiding categories
 
-//  let path = "./models/rac_basic_sample_project.ifc"; // get path into this
-//  loadIfc(path);
+let path;
 
+
+for (let proj of projects)
+{
+    //createCardDiv(proj.name, proj.id);
+    console.log(proj.name, proj.id);
+      if (proj.id === currentProjectID) {
+    let fileName = proj.name;
+    path = "./models/" + fileName + ".ifc"; // get path into this
+    console.log(path);
+    }
+}
+// for (let proj of projects)
+// {
+//   console.log(proj.name, proj.id);
+//   if (proj.id === currentProjectID) {
+//     let fileName = elem.name;
+//     path = "./models/" + fileName; // get path into this
+//     console.log(path);
+//   }
+// }
+
+loadIfc(path);
 //window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
 
 //get ifc properties, need to add the html element etc..
