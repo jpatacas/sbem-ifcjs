@@ -18,6 +18,8 @@ socket.emit("getProjects", "getProjects"); //get projects from a bimserver
 
 // console.log("hello model list")
 
+
+//need to build the projects map for locally hosted files instead of bimserver...
 socket.on("projectIds",(resname, reslist) => {
 
     let projectsMap = buildMap(resname, reslist);

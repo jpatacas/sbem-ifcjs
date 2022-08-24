@@ -1,5 +1,4 @@
 //UI functions
-  
 
 function createCardDiv(projectName, projectId) {
     const card = document.createElement('div');
@@ -34,7 +33,6 @@ function createCardDiv(projectName, projectId) {
 
 }
 
-
 // https://www.tutorialspoint.com/building-a-map-from-2-arrays-of-values-and-keys-in-javascript
 function buildMap (keys, values) {
     const map = new Map();
@@ -61,6 +59,8 @@ socket.emit("getProjects", "getProjects"); //get projects from a bimserver
 
 // console.log("hello model list")
 
+
+//need to build the projects map for locally hosted files instead of bimserver...
 socket.on("projectIds",(resname, reslist) => {
 
     let projectsMap = buildMap(resname, reslist);

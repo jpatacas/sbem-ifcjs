@@ -1,8 +1,8 @@
 import { Color } from "three";
 import { IfcViewerAPI } from "web-ifc-viewer";
-import { modelName, toolbar, checkboxes } from "./overlay.js";
+import { modelName, toolbar, createCheckboxes, createCardDiv, createEnergyButton, createIfcTreeMenu, createIfcPropertyMenu } from "./overlay.js";
 
-import {
+import { //need to load additional ifc entities or remove filter
     IFCWALLSTANDARDCASE,
     IFCSLAB,
     IFCDOOR,
@@ -10,12 +10,15 @@ import {
     IFCFURNISHINGELEMENT,
     IFCMEMBER,
     IFCPLATE,
-    IFCSPACE
+    IFCSPACE,
+    IFCSITE,
+    IFCROOF,
+    IFCBUILDINGELEMENTPROXY
   } from 'web-ifc';
 
 const socketiourl = "http://localhost:8088/"; //edit socket.io url here
 
-// List of categories names
+// List of categories names 
 const categories = {
     IFCWALLSTANDARDCASE,
     IFCSLAB,
@@ -24,7 +27,10 @@ const categories = {
     IFCWINDOW,
     IFCPLATE,
     IFCMEMBER,
-    IFCSPACE
+    IFCSPACE,
+    IFCSITE,
+    IFCROOF,
+    IFCBUILDINGELEMENTPROXY
   };
 
 const container = document.getElementById("viewer-container");
@@ -64,13 +70,16 @@ async function loadIfc(url) {
 
   await setupAllCategories(); //for ifc categories filter
   createTreeMenu(ifcProject);
-}
 
+}
+//loads the model -
 socket.on("fileName", (fileName) => {
   let path = socketiourl + fileName; //change here too or make it global variable
   loadIfc(path);
   //console.log(path);
 });
+
+//const resultJson = await viewer.IFC.properties.serializeAllProperties()
 
 
 const scene = viewer.context.getScene(); //for showing/hiding categories
@@ -81,15 +90,24 @@ const scene = viewer.context.getScene(); //for showing/hiding categories
 //window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
 
 //get ifc properties, need to add the html element etc..
+
+createIfcPropertyMenu();
+
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
+createIfcTreeMenu();
 document.getElementById("ifc-property-menu").style.display = "none";
 document.getElementById("ifc-tree-menu").style.display = "none";
-document.getElementById("checkboxes").style.display = "none";
+
+
+//createTabs(); //nned to move this to dblclick events..
 
 //modelName("Test IFC model"); //need to get the model name from bimserver - from project id? - call getProjects socket event, get the name from list of ids where id is in url
 
-//checkboxes(); //this is not working
+createCheckboxes(); //this is not working
+//createEnergyButton("energyuse-button");
+
+document.getElementById("checkboxes").style.display = "none";
 
 toolbar();
 
@@ -100,9 +118,21 @@ window.ondblclick = async () => {
   const result = await viewer.IFC.selector.pickIfcItem(); //highlightIfcItem hides all other elements
   if (!result) return;
   const { modelID, id } = result;
-  const props = await viewer.IFC.getProperties(modelID, id, true, false); //can also use getTypeProperties(), getMaterialProperties() and getPropertySets()
-  console.log(props); //call the function here
+  const props = await viewer.IFC.getProperties(modelID, id, true, false);
+  console.log(props); 
+  //console.log(props.psets);
+
+  // for (elem in props.psets)
+  // {
+  //   if (elem.value === "IfcElementQuantity")
+  //   {
+  //     console.log("expressID: " + elem.value.expressID);
+  //   }
+  //   console.log(elem.key, elem.value);
+  // }
+ // console.log(props);
   createPropertiesMenu(props);
+  //createTabs(props, typeProps);
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
 };
@@ -162,19 +192,18 @@ annotationsButton.onclick = () => {
 //can have the same event for 2 different buttons? (clip planes not working like this)
 //if button is active (get by class?)
 
-window.onauxclick = () => {
-    if (measurementsActive)
-    {
-        viewer.dimensions.create();
-    }
-}
+// window.onauxclick = () => {
+//     if (measurementsActive)
+//     {
+//         viewer.dimensions.create();
+//     }
+// }
 
 window.onkeydown = (event) => {
     if(event.code === 'Delete' && measurementsActive) {
         viewer.dimensions.delete();
     }
 }
-
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
@@ -186,8 +215,6 @@ for (let i = 0; i < toggler.length; i++) {
 }
 
 // hiding/filters
-
-
   
   // Gets the name of a category
   function getName(category) {
@@ -241,6 +268,7 @@ const subsets = {};
       });
   }
   
+
 
 
 // Spatial tree menu
@@ -308,7 +336,7 @@ function createSimpleChild(parent, node) {
 
         let idsArray = [node.expressID];
 
-        const props = await viewer.IFC.getProperties(0, idsArray[0], true, false); //can also use getTypeProperties(), getMaterialProperties() and getPropertySets()
+        const props = await viewer.IFC.getProperties(0, idsArray[0], true, false); 
         console.log(props); //call the function here
         createPropertiesMenu(props);
         document.getElementById("ifc-property-menu").style.display = "initial";
@@ -320,6 +348,8 @@ function createSimpleChild(parent, node) {
 //IFC properties menu functions - crete tabs here https://www.w3schools.com/howto/howto_js_tabs.asp
 function createPropertiesMenu(properties) {
     //console.log(properties);
+
+    //createTabs()
   
     removeAllChildren(propsGUI);
   
@@ -356,3 +386,6 @@ function createPropertiesMenu(properties) {
       element.removeChild(element.firstChild);
     }
   }
+
+
+  

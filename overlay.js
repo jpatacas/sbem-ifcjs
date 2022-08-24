@@ -1,17 +1,5 @@
 //UI functions
 
-const categoriesText = [
-    'IFCWALLSTANDARDCASE',
-    'IFCSLAB',
-    'IFCFURNISHINGELEMENT',
-    'IFCDOOR',
-    'IFCWINDOW',
-    'IFCPLATE',
-    'IFCMEMBER'
-  ]
-
-
-
 //needs to be fixed, it is over other html elements!
 export function modelName (modelName) {
     const modelNameContainer = document.createElement('div');
@@ -73,34 +61,64 @@ export function toolbar() { //need to get the functions from the three js projec
 
 }
 
+// UI categories functions
+
 function checkbox (category, text) {
     const checkbox = document.createElement('div');
     const checkboxInput = document.createElement('input');
-
+  
     checkboxInput.checked = true; //not working?
     checkboxInput.id = category;
     checkboxInput.type = 'checkbox';
-
+  
     checkbox.textContent = text;
     checkbox.appendChild(checkboxInput);
-
+  
     return checkbox;
-
-}
-
-export function checkboxes() {
+  
+  }
+  
+  export function createCheckboxes() { // need to improve this and check if categories are ok
     const checkboxes = document.createElement('div');
     checkboxes.className = 'checkboxes';
-
-    for (let i = 0; i < categoriesText.length; i++){
-        checkboxes.appendChild(checkbox(categoriesText[i], texts[i]))
-    }
-
-    // checkboxes.appendChild(checkbox(categories.IFCWALLSTANDARDCASE, texts[0]));
-
-    document.body.appendChild(checkboxes);
-}
+    checkboxes.id = "checkboxes";
   
+    let categoriesName = [
+      "Walls",
+      "Slabs",
+      "Furniture",
+      "Doors",
+      "Windows",
+      "Curtain wall plates",
+      "Curtain wall structure",
+      "Spaces",
+      "Site",
+      "Roofs",
+      "Other"
+    ]
+  
+    const categoriesText = [
+      "IFCWALLSTANDARDCASE",
+      "IFCSLAB",
+      "IFCFURNISHINGELEMENT",
+      "IFCDOOR",
+      "IFCWINDOW",
+      "IFCPLATE",
+      "IFCMEMBER",
+      "IFCSPACE",
+      "IFCSITE",
+      "IFCROOF",
+      "IFCBUILDINGELEMENTPROXY"
+    ]
+  
+    for (let i = 0; i < categoriesText.length; i++){
+        checkboxes.appendChild(checkbox(categoriesText[i], categoriesName[i]))
+    }
+  
+    // checkboxes.appendChild(checkbox(categories.IFCWALLSTANDARDCASE, texts[0]));
+  
+    document.body.appendChild(checkboxes);
+  }
 
 export function createCardDiv(projectName, projectId) {
     const card = document.createElement('div');
@@ -132,6 +150,42 @@ export function createCardDiv(projectName, projectId) {
 
     const projectContainer = document.getElementById("projects-container");
     projectContainer.appendChild(card);
+
+}
+
+export function createEnergyButton(id) {
+    const card = document.createElement('div');
+    card.className = "card";
+    card.id = id;
+
+    const svgElement = document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svgElement.setAttribute('width', '24');
+    svgElement.setAttribute('height','24');
+    svgElement.setAttribute('viewBox','0 0 24 24');
+    
+    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path1.setAttribute('d', 'M18 10.031v-6.423l-6.036-3.608-5.964 3.569v6.499l-6 3.224v7.216l6.136 3.492 5.864-3.393 5.864 3.393 6.136-3.492v-7.177l-6-3.3zm-1.143.036l-4.321 2.384v-4.956l4.321-2.539v5.111zm-4.895-8.71l4.272 2.596-4.268 2.509-4.176-2.554 4.172-2.551zm-10.172 12.274l4.778-2.53 4.237 2.417-4.668 2.667-4.347-2.554zm4.917 3.587l4.722-2.697v5.056l-4.722 2.757v-5.116zm6.512-3.746l4.247-2.39 4.769 2.594-4.367 2.509-4.649-2.713zm9.638 6.323l-4.421 2.539v-5.116l4.421-2.538v5.115z' );
+
+    svgElement.appendChild(path1);
+    card.appendChild(svgElement);
+
+    const h2Element = document.createElement('h2');
+    //h2Element.textContent = projectName;
+    
+    card.appendChild(h2Element);
+
+    const button = document.createElement('a');
+    button.className = 'button';
+    //button.href = './bimviewer.html' + `?id=${projectId}`;
+    //button.href= projectId; //also needs to be an input
+    button.textContent = "274 kwh/yr";
+
+    card.appendChild(button);
+
+    
+
+    // const projectContainer = document.getElementById("projects-container");
+    // projectContainer.appendChild(card);
 
 }
 
@@ -350,6 +404,98 @@ function annotationsButton() {
 
 }
 
+function energyuseButton () {
+    const energyuseButton = document.createElement("button");
+    energyuseButton.className = "button";
+    energyuseButton.id = "energyuse-Button";
+
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("width", "15");
+    svgEl.setAttribute("height", "15");
+    svgEl.setAttribute("viewBox", "0 0 24 24");
+
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path1.setAttribute("d", "M1.438 16.873l-1.438 7.127 7.127-1.437 16.874-16.872-5.69-5.69-16.873 16.872zm1.12 4.572l.722-3.584 2.86 2.861-3.582.723zm18.613-15.755l-13.617 13.617-2.86-2.861 13.617-13.617 2.86 2.861z");
+
+    svgEl.appendChild(path1);
+    annotationsButton.appendChild(svgEl);
+
+    
+    energyuseButton.addEventListener("click", function() { 
+        //show/hide energy button
+
+        
+
+        if (document.getElementById("energyuse-button").style.display === "initial")
+        {
+            document.getElementById("energyuse-button").style.display = "none";
+            energyuseButton.classList.remove("active");
+        }
+        else if (document.getElementById("energyuse-button").style.display === "none")
+        {
+            document.getElementById("energyuse-button").style.display = "initial";
+            energyuseButton.classList.add("active");
+        }
+    }
+    )
+
+
+    return energyuseButton;
+}
+
+export function createIfcTreeMenu() {
+    const ifcTreeMenuDiv = document.createElement("div");
+    ifcTreeMenuDiv.className = "ifc-tree-menu";
+    ifcTreeMenuDiv.id = "ifc-tree-menu";
+
+    const myUL = document.createElement("ul");
+    myUL.id = "myUL";
+
+    const treeRoot = document.createElement("li");
+    treeRoot.id = "tree-root";
+
+    const caretSpan = document.createElement("span");
+    caretSpan.className = "caret";
+    const ulNested = document.createElement("ul");
+    ulNested.className = "nested";
+
+   
+
+    treeRoot.appendChild(caretSpan);
+    treeRoot.appendChild(ulNested);
+    myUL.appendChild(treeRoot);
+    ifcTreeMenuDiv.appendChild(myUL);
+
+    document.body.appendChild(ifcTreeMenuDiv);
+
+}
+
+export function createIfcPropertyMenu() {
+    const ifcPropertyMenuDiv = document.createElement("div");
+    ifcPropertyMenuDiv.className = "ifc-property-menu bottom_right";
+    ifcPropertyMenuDiv.id = "ifc-property-menu";
+
+    const ifcPropertyItem = document.createElement("div");
+    ifcPropertyItem.className = "ifc-property-item";
+
+    const key = document.createElement("div");
+    key.innerText = "Property";
+
+    const ifcPropertyValue = document.createElement("div");
+    ifcPropertyValue.className = "ifc-property-value";
+    ifcPropertyValue.innerText = "Value";
+
+    const ifcPropMenuRoot = document.createElement("div");
+    ifcPropMenuRoot.id = "ifc-property-menu-root";
+
+
+    ifcPropertyItem.appendChild(key);
+    ifcPropertyItem.appendChild(ifcPropertyValue);
+    ifcPropertyMenuDiv.appendChild(ifcPropertyItem);
+    ifcPropertyMenuDiv.appendChild(ifcPropMenuRoot);
+    document.body.appendChild(ifcPropertyMenuDiv);
+
+}
 
 // https://www.tutorialspoint.com/building-a-map-from-2-arrays-of-values-and-keys-in-javascript
 export function buildMap (keys, values) {

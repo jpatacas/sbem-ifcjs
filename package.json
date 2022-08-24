@@ -17,6 +17,7 @@
   "dependencies": {
     "socket.io": "^4.5.1",
     "three": "^0.143.0",
+    "web-ifc": "0.0.35",
     "web-ifc-viewer": "^1.0.207"
   }
 }

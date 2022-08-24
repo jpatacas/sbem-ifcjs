@@ -112723,6 +112723,65 @@ function toolbar() { //need to get the functions from the three js project... (c
 
 }
 
+// UI categories functions
+
+function checkbox (category, text) {
+    const checkbox = document.createElement('div');
+    const checkboxInput = document.createElement('input');
+  
+    checkboxInput.checked = true; //not working?
+    checkboxInput.id = category;
+    checkboxInput.type = 'checkbox';
+  
+    checkbox.textContent = text;
+    checkbox.appendChild(checkboxInput);
+  
+    return checkbox;
+  
+  }
+  
+  function createCheckboxes() { // need to improve this and check if categories are ok
+    const checkboxes = document.createElement('div');
+    checkboxes.className = 'checkboxes';
+    checkboxes.id = "checkboxes";
+  
+    let categoriesName = [
+      "Walls",
+      "Slabs",
+      "Furniture",
+      "Doors",
+      "Windows",
+      "Curtain wall plates",
+      "Curtain wall structure",
+      "Spaces",
+      "Site",
+      "Roofs",
+      "Other"
+    ];
+  
+    const categoriesText = [
+      "IFCWALLSTANDARDCASE",
+      "IFCSLAB",
+      "IFCFURNISHINGELEMENT",
+      "IFCDOOR",
+      "IFCWINDOW",
+      "IFCPLATE",
+      "IFCMEMBER",
+      "IFCSPACE",
+      "IFCSITE",
+      "IFCROOF",
+      "IFCBUILDINGELEMENTPROXY"
+    ];
+  
+    for (let i = 0; i < categoriesText.length; i++){
+        checkboxes.appendChild(checkbox(categoriesText[i], categoriesName[i]));
+    }
+  
+    // checkboxes.appendChild(checkbox(categories.IFCWALLSTANDARDCASE, texts[0]));
+  
+    document.body.appendChild(checkboxes);
+  }
+
 // export function createSection () {
 //     const section = document.createElement('section');
 //     section.className = "project-list";
@@ -112933,9 +112992,63 @@ function annotationsButton$1() {
 
 }
 
+function createIfcTreeMenu() {
+    const ifcTreeMenuDiv = document.createElement("div");
+    ifcTreeMenuDiv.className = "ifc-tree-menu";
+    ifcTreeMenuDiv.id = "ifc-tree-menu";
+
+    const myUL = document.createElement("ul");
+    myUL.id = "myUL";
+
+    const treeRoot = document.createElement("li");
+    treeRoot.id = "tree-root";
+
+    const caretSpan = document.createElement("span");
+    caretSpan.className = "caret";
+    const ulNested = document.createElement("ul");
+    ulNested.className = "nested";
+
+   
+
+    treeRoot.appendChild(caretSpan);
+    treeRoot.appendChild(ulNested);
+    myUL.appendChild(treeRoot);
+    ifcTreeMenuDiv.appendChild(myUL);
+
+    document.body.appendChild(ifcTreeMenuDiv);
+
+}
+
+function createIfcPropertyMenu() {
+    const ifcPropertyMenuDiv = document.createElement("div");
+    ifcPropertyMenuDiv.className = "ifc-property-menu bottom_right";
+    ifcPropertyMenuDiv.id = "ifc-property-menu";
+
+    const ifcPropertyItem = document.createElement("div");
+    ifcPropertyItem.className = "ifc-property-item";
+
+    const key = document.createElement("div");
+    key.innerText = "Property";
+
+    const ifcPropertyValue = document.createElement("div");
+    ifcPropertyValue.className = "ifc-property-value";
+    ifcPropertyValue.innerText = "Value";
+
+    const ifcPropMenuRoot = document.createElement("div");
+    ifcPropMenuRoot.id = "ifc-property-menu-root";
+
+
+    ifcPropertyItem.appendChild(key);
+    ifcPropertyItem.appendChild(ifcPropertyValue);
+    ifcPropertyMenuDiv.appendChild(ifcPropertyItem);
+    ifcPropertyMenuDiv.appendChild(ifcPropMenuRoot);
+    document.body.appendChild(ifcPropertyMenuDiv);
+
+}
+
 const socketiourl = "http://localhost:8088/"; //edit socket.io url here
 
-// List of categories names
+// List of categories names 
 const categories = {
     IFCWALLSTANDARDCASE,
     IFCSLAB,
@@ -112944,7 +113057,10 @@ const categories = {
     IFCWINDOW,
     IFCPLATE,
     IFCMEMBER,
-    IFCSPACE
+    IFCSPACE,
+    IFCSITE,
+    IFCROOF,
+    IFCBUILDINGELEMENTPROXY
   };
 
 const container = document.getElementById("viewer-container");
@@ -112984,13 +113100,16 @@ async function loadIfc(url) {
 
   await setupAllCategories(); //for ifc categories filter
   createTreeMenu(ifcProject);
-}
 
+}
+//loads the model -
 socket.on("fileName", (fileName) => {
   let path = socketiourl + fileName; //change here too or make it global variable
   loadIfc(path);
   //console.log(path);
 });
+
+//const resultJson = await viewer.IFC.properties.serializeAllProperties()
 
 
 const scene = viewer.context.getScene(); //for showing/hiding categories
@@ -113001,15 +113120,24 @@ const scene = viewer.context.getScene(); //for showing/hiding categories
 //window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
 
 //get ifc properties, need to add the html element etc..
+
+createIfcPropertyMenu();
+
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
+createIfcTreeMenu();
 document.getElementById("ifc-property-menu").style.display = "none";
 document.getElementById("ifc-tree-menu").style.display = "none";
-document.getElementById("checkboxes").style.display = "none";
+
+
+//createTabs(); //nned to move this to dblclick events..
 
 //modelName("Test IFC model"); //need to get the model name from bimserver - from project id? - call getProjects socket event, get the name from list of ids where id is in url
 
-//checkboxes(); //this is not working
+createCheckboxes(); //this is not working
+//createEnergyButton("energyuse-button");
+
+document.getElementById("checkboxes").style.display = "none";
 
 toolbar();
 
@@ -113020,9 +113148,21 @@ window.ondblclick = async () => {
   const result = await viewer.IFC.selector.pickIfcItem(); //highlightIfcItem hides all other elements
   if (!result) return;
   const { modelID, id } = result;
-  const props = await viewer.IFC.getProperties(modelID, id, true, false); //can also use getTypeProperties(), getMaterialProperties() and getPropertySets()
-  console.log(props); //call the function here
+  const props = await viewer.IFC.getProperties(modelID, id, true, false);
+  console.log(props); 
+  //console.log(props.psets);
+
+  // for (elem in props.psets)
+  // {
+  //   if (elem.value === "IfcElementQuantity")
+  //   {
+  //     console.log("expressID: " + elem.value.expressID);
+  //   }
+  //   console.log(elem.key, elem.value);
+  // }
+ // console.log(props);
   createPropertiesMenu(props);
+  //createTabs(props, typeProps);
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
 };
@@ -113082,19 +113222,18 @@ annotationsButton.onclick = () => {
 //can have the same event for 2 different buttons? (clip planes not working like this)
 //if button is active (get by class?)
 
-window.onauxclick = () => {
-    if (measurementsActive)
-    {
-        viewer.dimensions.create();
-    }
-};
+// window.onauxclick = () => {
+//     if (measurementsActive)
+//     {
+//         viewer.dimensions.create();
+//     }
+// }
 
 window.onkeydown = (event) => {
     if(event.code === 'Delete' && measurementsActive) {
         viewer.dimensions.delete();
     }
 };
-
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
@@ -113106,8 +113245,6 @@ for (let i = 0; i < toggler.length; i++) {
 }
 
 // hiding/filters
-
-
   
   // Gets the name of a category
   function getName(category) {
@@ -113161,6 +113298,7 @@ const subsets = {};
       });
   }
   
+
 
 
 // Spatial tree menu
@@ -113228,7 +113366,7 @@ function createSimpleChild(parent, node) {
 
         let idsArray = [node.expressID];
 
-        const props = await viewer.IFC.getProperties(0, idsArray[0], true, false); //can also use getTypeProperties(), getMaterialProperties() and getPropertySets()
+        const props = await viewer.IFC.getProperties(0, idsArray[0], true, false); 
         console.log(props); //call the function here
         createPropertiesMenu(props);
         document.getElementById("ifc-property-menu").style.display = "initial";
@@ -113240,6 +113378,8 @@ function createSimpleChild(parent, node) {
 //IFC properties menu functions - crete tabs here https://www.w3schools.com/howto/howto_js_tabs.asp
 function createPropertiesMenu(properties) {
     //console.log(properties);
+
+    //createTabs()
   
     removeAllChildren(propsGUI);
   
