@@ -1,6 +1,6 @@
-import { Color } from "three";
+import { Color , MeshBasicMaterial, Triangle} from "three";
 import { IfcViewerAPI } from "web-ifc-viewer";
-import { modelName, toolbar, createCheckboxes,  createIfcTreeMenu, createIfcPropertyMenu } from "./overlay.js";
+import { modelName, createCheckboxes,  createIfcTreeMenu, createIfcPropertyMenu, toolbarBottom, toolbarTop } from "./overlay.js";
 
 import { projects } from "./projects.js";
 
@@ -73,6 +73,26 @@ async function loadIfc(url) {
   await setupAllCategories(); //for ifc categories filter
   createTreeMenu(ifcProject);
 
+  //floorplans try
+  // await viewer.plans.computeAllPlanViews(model.modelID);
+
+  // const allPlans = viewer.plans.getAll(model.modelID);
+
+  // const storeys = ifcProject.children[0].children[0].children;
+
+  // for (const plan of allPlans)
+  // {
+  //   const currentPlan = viewer.plans.planLists[model.modelID][plan];
+  //   const planView = viewer.edges.toggle('example', true);
+
+  //   const storey = storeys.find(storey => storey.expressID === currentPlan.expressID);
+
+  //   drawProjectedItems(storey,plan, model.modelID);
+    
+  //  // console.log(currentPlan)
+  //   //console.log(planView)
+  // }
+
 }
 //loads the model -
 // socket.on("fileName", (fileName) => {
@@ -132,7 +152,9 @@ createCheckboxes(); //this is not working
 
 document.getElementById("checkboxes").style.display = "none";
 
-toolbar();
+toolbarTop();
+toolbarBottom();
+
 
 //select IFC elements
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
@@ -143,7 +165,9 @@ window.ondblclick = async () => {
   const { modelID, id } = result;
   const props = await viewer.IFC.getProperties(modelID, id, true, false);
   console.log(props); 
-  //console.log(props.psets);
+  console.log(props.psets);
+
+ 
 
   // for (elem in props.psets)
   // {
@@ -158,6 +182,17 @@ window.ondblclick = async () => {
   //createTabs(props, typeProps);
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
+
+  //works, needs more testing?
+  if (clippingPlanesActive) {
+    viewer.clipper.createPlane();
+  }
+
+  if (measurementsActive)
+  {
+      viewer.dimensions.create();
+  }
+
 };
 
 //set up clipping planes - try to put inside function (see three model loader - switch views button)
@@ -176,11 +211,15 @@ clipButton.onclick = () => {
   }
 };
 
-//on right mouse click
-
+//on right mouse click - remove these events?
 window.onauxclick = () => {
     if (clippingPlanesActive) {
       viewer.clipper.createPlane();
+    }
+
+    if (measurementsActive)
+    {
+        viewer.dimensions.create();
     }
   };
 
@@ -188,7 +227,12 @@ window.onkeydown = (event) => {
   if (event.code === "Delete" && clippingPlanesActive) {
     // viewer.clipper.deletePlane();
     viewer.clipper.deleteAllPlanes();
+    //console.log("delete")
   }
+
+      if(event.code === 'Delete' && measurementsActive) {
+        viewer.dimensions.delete();
+    }
 };
 
 //notes measurements
@@ -212,21 +256,6 @@ annotationsButton.onclick = () => {
 
 }
 
-//can have the same event for 2 different buttons? (clip planes not working like this)
-//if button is active (get by class?)
-
-// window.onauxclick = () => {
-//     if (measurementsActive)
-//     {
-//         viewer.dimensions.create();
-//     }
-// }
-
-window.onkeydown = (event) => {
-    if(event.code === 'Delete' && measurementsActive) {
-        viewer.dimensions.delete();
-    }
-}
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
@@ -410,5 +439,109 @@ function createPropertiesMenu(properties) {
     }
   }
 
+//remove this..
+  async function drawProjectedItems(storey, plan, modelID) {
 
+    const dummySubsetMat = new MeshBasicMaterial({visible: false});
+
+    // Create a new drawing (if it doesn't exist)
+    //if (!viewer.dxf.drawings[plan.name]) viewer.dxf.newDrawing(plan.name);
   
+    // Get the IDs of all the items to draw
+    const ids = storey.children.map(item => item.expressID);
+  
+    // If no items to draw in this layer in this floor plan, let's continue
+    if (!ids.length) return;
+  
+    // If there are items, extract its geometry
+    const subset = viewer.IFC.loader.ifcManager.createSubset({
+      modelID,
+      ids,
+      removePrevious: true,
+      customID: 'floor_plan_generation',
+      material: dummySubsetMat,
+    });
+  
+    // Get the projection of the items in this floor plan
+    const filteredPoints = [];
+    const edges = await viewer.edgesProjector.projectEdges(subset);
+    const positions = edges.geometry.attributes.position.array;
+    
+    // Lines shorter than this won't be rendered
+    const tolerance = 0.01;
+    for (let i = 0; i < positions.length - 5; i += 6) {
+  
+      const a = positions[i] - positions[i + 3];
+      // Z coords are multiplied by -1 to match DXF Y coordinate
+      const b = -positions[i + 2] + positions[i + 5];
+  
+      const distance = Math.sqrt(a * a + b * b);
+  
+      if (distance > tolerance) {
+        filteredPoints.push([positions[i], -positions[i + 2], positions[i + 3], -positions[i + 5]]);
+      }
+  
+    }
+    
+    //console.log(positions)
+    let positionsArray = Array.from(positions);
+
+    //console.log(positionsArray)
+
+   
+    //console.log(filteredPoints);
+   // console.log("edges: " + edges);
+   
+    // Draw the projection of the items
+
+    for (let i = 0; i < positionsArray.length; i++)
+    {
+      if (positionsArray[i] === 0)
+      {
+        positionsArray.splice(i,1);
+      }
+  
+    }
+
+    let newArray = sliceIntoChunks(positionsArray, 2);
+
+    let positionsArraySorted = newArray.sort(function(a, b) {
+      if (a[0] == b[0]) {
+        return a[1] - b[1];
+      }
+      return b[0] - a[0];
+    })
+
+    console.log(positionsArraySorted);
+    
+    //console.log(sliceIntoChunks(positionsArraySorted, 2));
+
+    //console.log(calculateArea([[16.9,-5.55],[16.9, 1.85], [0, 1.85],[0, -5.55]]))
+
+    console.log(calculateArea(sliceIntoChunks(positionsArraySorted, 2)));
+
+  }
+
+function calculateArea(coords) { //y, x coords are swapped, changed the function...
+  let area = 0;
+
+  for (let i = 0; i < coords.length; i++) {
+    const [y1, x1] = coords[i];
+    const [y2, x2] = coords[(i + 1) % coords.length];
+
+    area += x1 * y2 - x2 * y1
+  }
+
+  return area / 2;
+  // replace with
+  // return Math.abs(area) / 2;
+}
+
+function sliceIntoChunks(arr, chunkSize) {
+  const res = [];
+  for (let i = 0; i < arr.length; i += chunkSize) {
+      const chunk = arr.slice(i, i + chunkSize);
+      res.push(chunk);
+  }
+  return res;
+}

@@ -57,6 +57,10 @@ a {
     top: 1rem;
 }
 
+.left {
+    left: 2rem;
+}
+
 .spinning {
     animation: logo-spin 8s infinite 0s cubic-bezier(0.38, 0.01, 0, 0.99);
   }
@@ -105,6 +109,11 @@ a {
     position: absolute;
     right: 1rem;
     top: 1rem;
+    align-items: center;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    z-index: 1;
 }
 
 /* From uiverse.io by @fanishah */
@@ -181,10 +190,49 @@ a {
     transform: translateY(-1px);
 }
 
+.homebutton {
+    padding: 1.5rem;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+
+.homebutton:hover {
+    background-color: var(--light-blue);
+    box-shadow: 0px 15px 20px rgba(46, 104, 229, 0.4);
+    color: #fff;
+    fill: #fff;
+    transform: translateY(-7px);
+}
+
+.homebutton:active {
+    transform: translateY(-1px);
+}
+
 .simple-card-container {
     display: flex;
     justify-content: center;
     position: absolute;
+    width: 100%;
+}
+
+.simple-card-container-home {
+    display: flex;
+    justify-content: left;
+    position: fixed;
     width: 100%;
 }
 
@@ -210,7 +258,13 @@ a {
     border: 1px solid gray;
     width: 20rem;
     position: absolute;
-    background-color: white;
+    /* background-color: white; */
+    
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+
 }
 
 .ifc-property-item {
@@ -226,14 +280,35 @@ a {
     text-align: right;
 }
 
+/* checkboxes */
+
+.checkbox-item {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0.2rem;
+    border-bottom: solid 1px gray;
+}
+
+.checkbox-value {
+    width: 100%;
+    text-align: right;
+}
+
 /*Tree view: https://www.w3schools.com/howto/howto_js_treeview.asp*/
 
 .ifc-tree-menu {
     position: absolute;
     overflow-y: scroll;
-    background-color: white;
+    /* background-color: white; */
     height: 100vh;
     
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+    z-index: 1;
+
 }
 
 li ul {

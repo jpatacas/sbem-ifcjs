@@ -36,7 +36,25 @@ function button (svgpath) {
   
   }
 
-export function toolbar() { //need to get the functions from the three js project... (create buttons separately)
+
+export function toolbarTop() {
+
+    const cardContainer = document.createElement('div');
+    cardContainer.className = 'simple-card-container-home top left';
+    cardContainer.id = 'simple-card-container-home-top';
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'toolbar';
+
+    toolbar.appendChild(homeButton());
+
+    cardContainer.appendChild(toolbar);
+
+    document.body.appendChild(cardContainer);
+
+}
+
+export function toolbarBottom() { //need to get the functions from the three js project... (create buttons separately)
 
     const cardContainer = document.createElement('div');
     cardContainer.className = 'simple-card-container bottom';
@@ -48,7 +66,7 @@ export function toolbar() { //need to get the functions from the three js projec
     //     toolbar.appendChild(button(svgpath));
     // }
 
-    toolbar.appendChild(homeButton());
+    //toolbar.appendChild(homeButton());
     toolbar.appendChild(treeButton());
     toolbar.appendChild(filterButton());
     toolbar.appendChild(clipPlaneButton());
@@ -64,15 +82,31 @@ export function toolbar() { //need to get the functions from the three js projec
 // UI categories functions
 
 function checkbox (category, text) {
+
     const checkbox = document.createElement('div');
+    checkbox.className = "checkbox-item";
+
+
+    const checkboxTextDiv = document.createElement('div');
+    
+
     const checkboxInput = document.createElement('input');
+    checkboxTextDiv.textContent = text;
+
+    const checkboxInputDiv = document.createElement('div');
+    checkboxInputDiv.className = "checkbox-value";
   
     checkboxInput.checked = true; //not working?
     checkboxInput.id = category;
     checkboxInput.type = 'checkbox';
   
-    checkbox.textContent = text;
-    checkbox.appendChild(checkboxInput);
+    //create divs inside the checkbox div, like ifc property menu. 
+
+    checkboxInputDiv.appendChild(checkboxInput);
+
+    checkbox.appendChild(checkboxTextDiv);
+   
+    checkbox.appendChild(checkboxInputDiv);
   
     return checkbox;
   
@@ -203,19 +237,19 @@ export function createEnergyButton(id) {
 function homeButton() {
 
     const homeButton= document.createElement("button"); //should these be buttons instead of 'a'?
-    homeButton.className = "button";
+    homeButton.className = "homebutton";
 
    // homeButton.href = "./index.html";
     homeButton.setAttribute("onclick","window.location.href='./index.html';");
     //filterButton.
 
     const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
+    svgEl.setAttribute("width", "50");
+    svgEl.setAttribute("height", "50");
     svgEl.setAttribute("viewBox", "0 0 24 24");
 
     const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M6 7v-7h13v10h5v14h-23v-17h5zm0 16v-4h-1v4h1zm8-4h-3v4h3v-4zm6 0h-1v4h1v-4zm2-7h-3v6h2v4h1v-10zm-5-10h-9v20h1v-5h7v5h1v-20zm-13 20v-4h2v-9h-3v13h1zm17-6h-1v-2h1v2zm-17-2h1v2h-1v-2zm8 1h-2v-2h2v2zm3 0h-2v-2h2v2zm-10-4v2h-1v-2h1zm7 1h-2v-2h2v2zm3 0h-2v-2h2v2zm-3-3h-2v-2h2v2zm3 0h-2v-2h2v2zm-3-3h-2v-2h2v2zm3 0h-2v-2h2v2z"); //change icon here
+    path1.setAttribute("d", "M22 11.414v12.586h-20v-12.586l-1.293 1.293-.707-.707 12-12 12 12-.707.707-1.293-1.293zm-6 11.586h5v-12.586l-9-9-9 9v12.586h5v-9h8v9zm-1-7.889h-6v7.778h6v-7.778z"); //change icon here
 
     svgEl.appendChild(path1);
     homeButton.appendChild(svgEl);
@@ -367,11 +401,15 @@ function treeButton() {
         {
             document.getElementById("ifc-tree-menu").style.display = "none";
             treeButton.classList.remove("active");
+            document.getElementById("simple-card-container-home-top").className = 'simple-card-container-home top left';
+
         }
         else if (document.getElementById("ifc-tree-menu").style.display === "none")
         {
             document.getElementById("ifc-tree-menu").style.display = "initial";
             treeButton.classList.add("active");
+            document.getElementById("simple-card-container-home-top").className = 'simple-card-container top';
+
         }
 
 
