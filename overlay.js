@@ -82,6 +82,7 @@ export function createCheckboxes() {
 
   let categoriesName = [
     "Walls",
+    "Walls (standard case)",
     "Slabs",
     "Furniture",
     "Doors",
@@ -95,6 +96,7 @@ export function createCheckboxes() {
   ];
 
   const categoriesText = [
+    "IFCWALL",
     "IFCWALLSTANDARDCASE",
     "IFCSLAB",
     "IFCFURNISHINGELEMENT",

@@ -112766,6 +112766,7 @@ function createCheckboxes() {
 
   let categoriesName = [
     "Walls",
+    "Walls (standard case)",
     "Slabs",
     "Furniture",
     "Doors",
@@ -112779,6 +112780,7 @@ function createCheckboxes() {
   ];
 
   const categoriesText = [
+    "IFCWALL",
     "IFCWALLSTANDARDCASE",
     "IFCSLAB",
     "IFCFURNISHINGELEMENT",
@@ -113112,6 +113114,7 @@ const projects = [
 
 // List of categories names
 const categories = {
+  IFCWALL,
   IFCWALLSTANDARDCASE,
   IFCSLAB,
   IFCFURNISHINGELEMENT,
@@ -113179,11 +113182,11 @@ let path;
 
 for (let proj of projects) {
   //createCardDiv(proj.name, proj.id);
-  console.log(proj.name, proj.id);
+  //console.log(proj.name, proj.id);
   if (proj.id === currentProjectID) {
     let fileName = proj.name;
     path = "./models/" + fileName + ".ifc"; // get path into this
-    console.log(path);
+    //console.log(path);
   }
 }
 
@@ -113217,8 +113220,8 @@ window.ondblclick = async () => {
   if (!result) return;
   const { modelID, id } = result;
   const props = await viewer.IFC.getProperties(modelID, id, true, false);
-  console.log(props);
-  console.log(props.psets);
+  //console.log(props);
+  //console.log(props.psets);
 
   createPropertiesMenu(props);
 
@@ -113429,7 +113432,7 @@ function createSimpleChild(parent, node) {
     let idsArray = [node.expressID];
 
     const props = await viewer.IFC.getProperties(0, idsArray[0], true, false);
-    console.log(props); //call the function here
+    //console.log(props); //call the function here
     createPropertiesMenu(props);
     document.getElementById("ifc-property-menu").style.display = "initial";
     propertiesButton.classList.add("active");

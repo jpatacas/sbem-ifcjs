@@ -20,7 +20,7 @@ import { projects } from './projects.js';
 for (let proj of projects)
 {
     createCardDiv(proj.name, proj.id);
-    console.log(proj.name, proj.id);
+   // console.log(proj.name, proj.id);
 }
 
 //need to build the projects map for locally hosted files instead of bimserver...
