@@ -112698,430 +112698,438 @@ class IfcViewerAPI {
 
 //UI functions
 
-
 function toolbarTop() {
+  const cardContainer = document.createElement("div");
+  cardContainer.className = "simple-card-container-home top left";
+  cardContainer.id = "simple-card-container-home-top";
 
-    const cardContainer = document.createElement('div');
-    cardContainer.className = 'simple-card-container-home top left';
-    cardContainer.id = 'simple-card-container-home-top';
+  const toolbar = document.createElement("div");
+  toolbar.className = "toolbar";
 
-    const toolbar = document.createElement('div');
-    toolbar.className = 'toolbar';
+  toolbar.appendChild(homeButton());
 
-    toolbar.appendChild(homeButton());
+  cardContainer.appendChild(toolbar);
 
-    cardContainer.appendChild(toolbar);
-
-    document.body.appendChild(cardContainer);
-
+  document.body.appendChild(cardContainer);
 }
 
-function toolbarBottom() { //need to get the functions from the three js project... (create buttons separately)
+function toolbarBottom() {
+  const cardContainer = document.createElement("div");
+  cardContainer.className = "simple-card-container bottom";
 
-    const cardContainer = document.createElement('div');
-    cardContainer.className = 'simple-card-container bottom';
+  const toolbar = document.createElement("div");
+  toolbar.className = "toolbar";
 
-    const toolbar = document.createElement('div');
-    toolbar.className = 'toolbar';
+  toolbar.appendChild(treeButton());
+  toolbar.appendChild(filterButton());
+  toolbar.appendChild(clipPlaneButton());
+  toolbar.appendChild(annotationsButton$1());
+  toolbar.appendChild(propertiesButton$1());
+  toolbar.appendChild(helpButton());
 
-    // for (let svgpath of svgPaths){
-    //     toolbar.appendChild(button(svgpath));
-    // }
+  cardContainer.appendChild(toolbar);
 
-    //toolbar.appendChild(homeButton());
-    toolbar.appendChild(treeButton());
-    toolbar.appendChild(filterButton());
-    toolbar.appendChild(clipPlaneButton());
-    toolbar.appendChild(annotationsButton$1());
-    toolbar.appendChild(propertiesButton$1());
-
-    cardContainer.appendChild(toolbar);
-
-    document.body.appendChild(cardContainer);
-
+  document.body.appendChild(cardContainer);
 }
 
 // UI categories functions
 
-function checkbox (category, text) {
+function checkbox(category, text) {
+  const checkbox = document.createElement("div");
+  checkbox.className = "checkbox-item";
 
-    const checkbox = document.createElement('div');
-    checkbox.className = "checkbox-item";
+  const checkboxTextDiv = document.createElement("div");
 
+  const checkboxInput = document.createElement("input");
+  checkboxTextDiv.textContent = text;
 
-    const checkboxTextDiv = document.createElement('div');
-    
+  const checkboxInputDiv = document.createElement("div");
+  checkboxInputDiv.className = "checkbox-value";
 
-    const checkboxInput = document.createElement('input');
-    checkboxTextDiv.textContent = text;
+  checkboxInput.checked = true;
+  checkboxInput.id = category;
+  checkboxInput.type = "checkbox";
 
-    const checkboxInputDiv = document.createElement('div');
-    checkboxInputDiv.className = "checkbox-value";
-  
-    checkboxInput.checked = true; //not working?
-    checkboxInput.id = category;
-    checkboxInput.type = 'checkbox';
-  
-    //create divs inside the checkbox div, like ifc property menu. 
+  checkboxInputDiv.appendChild(checkboxInput);
+  checkbox.appendChild(checkboxTextDiv);
+  checkbox.appendChild(checkboxInputDiv);
 
-    checkboxInputDiv.appendChild(checkboxInput);
+  return checkbox;
+}
 
-    checkbox.appendChild(checkboxTextDiv);
-   
-    checkbox.appendChild(checkboxInputDiv);
-  
-    return checkbox;
-  
-  }
-  
-  function createCheckboxes() { // need to improve this and check if categories are ok
-    const checkboxes = document.createElement('div');
-    checkboxes.className = 'checkboxes';
-    checkboxes.id = "checkboxes";
-  
-    let categoriesName = [
-      "Walls",
-      "Slabs",
-      "Furniture",
-      "Doors",
-      "Windows",
-      "Curtain wall plates",
-      "Curtain wall structure",
-      "Spaces",
-      "Site",
-      "Roofs",
-      "Other"
-    ];
-  
-    const categoriesText = [
-      "IFCWALLSTANDARDCASE",
-      "IFCSLAB",
-      "IFCFURNISHINGELEMENT",
-      "IFCDOOR",
-      "IFCWINDOW",
-      "IFCPLATE",
-      "IFCMEMBER",
-      "IFCSPACE",
-      "IFCSITE",
-      "IFCROOF",
-      "IFCBUILDINGELEMENTPROXY"
-    ];
-  
-    for (let i = 0; i < categoriesText.length; i++){
-        checkboxes.appendChild(checkbox(categoriesText[i], categoriesName[i]));
-    }
-  
-    // checkboxes.appendChild(checkbox(categories.IFCWALLSTANDARDCASE, texts[0]));
-  
-    document.body.appendChild(checkboxes);
+function createCheckboxes() {
+  // need to improve this and check if categories are ok
+  const checkboxes = document.createElement("div");
+  checkboxes.className = "checkboxes";
+  checkboxes.id = "checkboxes";
+  checkboxes.style.display = "none";
+
+  let categoriesName = [
+    "Walls",
+    "Slabs",
+    "Furniture",
+    "Doors",
+    "Windows",
+    "Curtain wall plates",
+    "Curtain wall structure",
+    "Spaces",
+    "Site",
+    "Roofs",
+    "Other",
+  ];
+
+  const categoriesText = [
+    "IFCWALLSTANDARDCASE",
+    "IFCSLAB",
+    "IFCFURNISHINGELEMENT",
+    "IFCDOOR",
+    "IFCWINDOW",
+    "IFCPLATE",
+    "IFCMEMBER",
+    "IFCSPACE",
+    "IFCSITE",
+    "IFCROOF",
+    "IFCBUILDINGELEMENTPROXY",
+  ];
+
+  for (let i = 0; i < categoriesText.length; i++) {
+    checkboxes.appendChild(checkbox(categoriesText[i], categoriesName[i]));
   }
 
-// export function createSection () {
-//     const section = document.createElement('section');
-//     section.className = "project-list";
-    
-//     let card1 = createCardDiv(); //needs to be a array?
-//     let card2 = createCardDiv();
+  document.body.appendChild(checkboxes);
+}
 
-//     section.appendChild(card1);
-//     section.appendChild(card2);
-//     document.body.appendChild(section);
-// }
 function homeButton() {
+  const homeButton = document.createElement("button");
+  homeButton.className = "homebutton";
 
-    const homeButton= document.createElement("button"); //should these be buttons instead of 'a'?
-    homeButton.className = "homebutton";
+  homeButton.setAttribute("onclick", "window.location.href='./index.html';");
 
-   // homeButton.href = "./index.html";
-    homeButton.setAttribute("onclick","window.location.href='./index.html';");
-    //filterButton.
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "50");
+  svgEl.setAttribute("height", "50");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "50");
-    svgEl.setAttribute("height", "50");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M22 11.414v12.586h-20v-12.586l-1.293 1.293-.707-.707 12-12 12 12-.707.707-1.293-1.293zm-6 11.586h5v-12.586l-9-9-9 9v12.586h5v-9h8v9zm-1-7.889h-6v7.778h6v-7.778z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M22 11.414v12.586h-20v-12.586l-1.293 1.293-.707-.707 12-12 12 12-.707.707-1.293-1.293zm-6 11.586h5v-12.586l-9-9-9 9v12.586h5v-9h8v9zm-1-7.889h-6v7.778h6v-7.778z"); //change icon here
+  svgEl.appendChild(path1);
+  homeButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    homeButton.appendChild(svgEl);
-
-    return homeButton;
-
+  return homeButton;
 }
 
-function filterButton() { //need individual class names for buttons?
+function filterButton() {
+  const filterButton = document.createElement("button");
+  filterButton.className = "button";
 
-    const filterButton = document.createElement("button"); //should these be buttons instead of 'a'?
-    filterButton.className = "button";
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M19.479 2l-7.479 12.543v5.924l-1-.6v-5.324l-7.479-12.543h15.958zm3.521-2h-23l9 15.094v5.906l5 3v-8.906l9-15.094z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M19.479 2l-7.479 12.543v5.924l-1-.6v-5.324l-7.479-12.543h15.958zm3.521-2h-23l9 15.094v5.906l5 3v-8.906l9-15.094z"); //add svg
+  svgEl.appendChild(path1);
+  filterButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    filterButton.appendChild(svgEl);
+  filterButton.addEventListener(
+    "click",
+    function () {
+      if (document.getElementById("checkboxes").style.display === "initial") {
+        document.getElementById("checkboxes").style.display = "none";
+        filterButton.classList.remove("active");
+      } else if (
+        document.getElementById("checkboxes").style.display === "none"
+      ) {
+        document.getElementById("checkboxes").style.display = "initial";
+        filterButton.classList.add("active");
+      }
+    },
+    false
+  );
 
-    filterButton.addEventListener("click", function() {
- 
-         if (document.getElementById("checkboxes").style.display === "initial")
-         {
-             document.getElementById("checkboxes").style.display = "none";
-             filterButton.classList.remove("active");
-             //reset filter here?
-         }
-         else if (document.getElementById("checkboxes").style.display === "none")
-         {
-             document.getElementById("checkboxes").style.display = "initial";
-             filterButton.classList.add("active");
-         }
-         
-         
-         }, false);
-
-    return filterButton;
-
+  return filterButton;
 }
 
-function propertiesButton$1() { //toggle on off properties
+function propertiesButton$1() {
+  const propertiesButton = document.createElement("button");
+  propertiesButton.className = "button";
+  propertiesButton.id = "propertiesButton";
 
-    const propertiesButton = document.createElement("button");
-    propertiesButton.className = "button";
-    propertiesButton.id = "propertiesButton";
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M4 22h-4v-4h4v4zm0-12h-4v4h4v-4zm0-8h-4v4h4v-4zm3 0v4h17v-4h-17zm0 12h17v-4h-17v4zm0 8h17v-4h-17v4z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M4 22h-4v-4h4v4zm0-12h-4v4h4v-4zm0-8h-4v4h4v-4zm3 0v4h17v-4h-17zm0 12h17v-4h-17v4zm0 8h17v-4h-17v4z");
+  svgEl.appendChild(path1);
+  propertiesButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    propertiesButton.appendChild(svgEl);
-    //events to switch between views
-    propertiesButton.addEventListener("click", function() {
-       // document.getElementById("ifc-property-menu").style.display = "initial";
+  propertiesButton.addEventListener(
+    "click",
+    function () {
+      if (
+        document.getElementById("ifc-property-menu").style.display === "initial"
+      ) {
+        document.getElementById("ifc-property-menu").style.display = "none";
+        propertiesButton.classList.remove("active");
+      } else if (
+        document.getElementById("ifc-property-menu").style.display === "none"
+      ) {
+        document.getElementById("ifc-property-menu").style.display = "initial";
+        propertiesButton.classList.add("active");
+      }
+    },
+    false
+  );
 
-        // if (mouseDown === false) {
-        //     mouseDown = true;
-        //     document.getElementById("ifc-property-menu").style.display = "initial";
-        //     propertiesButton.classList.add("active");
-        // } else if (mouseDown === true) {
-        //     mouseDown = false;
-        //     document.getElementById("ifc-property-menu").style.display = "none";
-        //     propertiesButton.classList.remove("active");
-        // }
-
-        if (document.getElementById("ifc-property-menu").style.display === "initial")
-        {
-            document.getElementById("ifc-property-menu").style.display = "none";
-            propertiesButton.classList.remove("active");
-        }
-        else if (document.getElementById("ifc-property-menu").style.display === "none")
-        {
-            document.getElementById("ifc-property-menu").style.display = "initial";
-            propertiesButton.classList.add("active");
-        }
-        
-        
-        }, false);
-
-    return propertiesButton;
-
+  return propertiesButton;
 }
 
 function clipPlaneButton() {
+  const clipPlaneButton = document.createElement("button");
+  clipPlaneButton.className = "button";
+  clipPlaneButton.id = "clipPlaneButton";
 
-    const clipPlaneButton = document.createElement("button");
-    clipPlaneButton.className = "button";
-    clipPlaneButton.id = "clipPlaneButton";
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M14.686 13.646l-6.597 3.181c-1.438.692-2.755-1.124-2.755-1.124l6.813-3.287 2.539 1.23zm6.168 5.354c-.533 0-1.083-.119-1.605-.373-1.511-.731-2.296-2.333-1.943-3.774.203-.822-.23-.934-.891-1.253l-11.036-5.341s1.322-1.812 2.759-1.117c.881.427 4.423 2.136 7.477 3.617l.766-.368c.662-.319 1.094-.43.895-1.252-.351-1.442.439-3.043 1.952-3.77.521-.251 1.068-.369 1.596-.369 1.799 0 3.147 1.32 3.147 2.956 0 1.23-.766 2.454-2.032 3.091-1.266.634-2.15.14-3.406.75l-.394.19.431.21c1.254.614 2.142.122 3.404.759 1.262.638 2.026 1.861 2.026 3.088 0 1.64-1.352 2.956-3.146 2.956zm-1.987-9.967c.381.795 1.459 1.072 2.406.617.945-.455 1.405-1.472 1.027-2.267-.381-.796-1.46-1.073-2.406-.618-.946.455-1.408 1.472-1.027 2.268zm-2.834 2.819c0-.322-.261-.583-.583-.583-.321 0-.583.261-.583.583s.262.583.583.583c.322.001.583-.261.583-.583zm5.272 2.499c-.945-.457-2.025-.183-2.408.611-.381.795.078 1.814 1.022 2.271.945.458 2.024.184 2.406-.611.382-.795-.075-1.814-1.02-2.271zm-18.305-3.351h-3v2h3v-2zm4 0h-3v2h3v-2z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M14.686 13.646l-6.597 3.181c-1.438.692-2.755-1.124-2.755-1.124l6.813-3.287 2.539 1.23zm6.168 5.354c-.533 0-1.083-.119-1.605-.373-1.511-.731-2.296-2.333-1.943-3.774.203-.822-.23-.934-.891-1.253l-11.036-5.341s1.322-1.812 2.759-1.117c.881.427 4.423 2.136 7.477 3.617l.766-.368c.662-.319 1.094-.43.895-1.252-.351-1.442.439-3.043 1.952-3.77.521-.251 1.068-.369 1.596-.369 1.799 0 3.147 1.32 3.147 2.956 0 1.23-.766 2.454-2.032 3.091-1.266.634-2.15.14-3.406.75l-.394.19.431.21c1.254.614 2.142.122 3.404.759 1.262.638 2.026 1.861 2.026 3.088 0 1.64-1.352 2.956-3.146 2.956zm-1.987-9.967c.381.795 1.459 1.072 2.406.617.945-.455 1.405-1.472 1.027-2.267-.381-.796-1.46-1.073-2.406-.618-.946.455-1.408 1.472-1.027 2.268zm-2.834 2.819c0-.322-.261-.583-.583-.583-.321 0-.583.261-.583.583s.262.583.583.583c.322.001.583-.261.583-.583zm5.272 2.499c-.945-.457-2.025-.183-2.408.611-.381.795.078 1.814 1.022 2.271.945.458 2.024.184 2.406-.611.382-.795-.075-1.814-1.02-2.271zm-18.305-3.351h-3v2h3v-2zm4 0h-3v2h3v-2z");
+  svgEl.appendChild(path1);
+  clipPlaneButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    clipPlaneButton.appendChild(svgEl);
-
-    return clipPlaneButton;
-
+  return clipPlaneButton;
 }
 
 function treeButton() {
+  const treeButton = document.createElement("button");
+  treeButton.className = "button";
 
-    const treeButton = document.createElement("button");
-    treeButton.className = "button";
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
+  svgEl.setAttribute("transform", "rotate(270 0 0)");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
-    svgEl.setAttribute("transform", "rotate(270 0 0)");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M22 18v-7h-9v-5h3v-6h-8v6h3v5h-9v7h-2v6h6v-6h-2v-5h7v5h-2v6h6v-6h-2v-5h7v5h-2v6h6v-6z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M22 18v-7h-9v-5h3v-6h-8v6h3v5h-9v7h-2v6h6v-6h-2v-5h7v5h-2v6h6v-6h-2v-5h7v5h-2v6h6v-6z");
+  svgEl.appendChild(path1);
+  treeButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    treeButton.appendChild(svgEl);
-    //events to switch between views
-    treeButton.addEventListener("click", function() {
-        // if (mouseDown === false) {
-        //     mouseDown = true;
-        //     document.getElementById("ifc-tree-menu").style.display = "none";
-        //     treeButton.classList.remove("active");
-        // } else if (mouseDown === true) {
-        //     mouseDown = false;
-        //     document.getElementById("ifc-tree-menu").style.display = "initial";
-        //     treeButton.classList.add("active");
-        // }
+  treeButton.addEventListener(
+    "click",
+    function () {
+      if (
+        document.getElementById("ifc-tree-menu").style.display === "initial"
+      ) {
+        document.getElementById("ifc-tree-menu").style.display = "none";
+        treeButton.classList.remove("active");
+        document.getElementById("simple-card-container-home-top").className =
+          "simple-card-container-home top left";
+      } else if (
+        document.getElementById("ifc-tree-menu").style.display === "none"
+      ) {
+        document.getElementById("ifc-tree-menu").style.display = "initial";
+        treeButton.classList.add("active");
+        document.getElementById("simple-card-container-home-top").className =
+          "simple-card-container top";
+      }
+    },
+    false
+  );
 
-        if (document.getElementById("ifc-tree-menu").style.display === "initial")
-        {
-            document.getElementById("ifc-tree-menu").style.display = "none";
-            treeButton.classList.remove("active");
-            document.getElementById("simple-card-container-home-top").className = 'simple-card-container-home top left';
-
-        }
-        else if (document.getElementById("ifc-tree-menu").style.display === "none")
-        {
-            document.getElementById("ifc-tree-menu").style.display = "initial";
-            treeButton.classList.add("active");
-            document.getElementById("simple-card-container-home-top").className = 'simple-card-container top';
-
-        }
-
-
-        }, false);
-
-
-    return treeButton;
-
+  return treeButton;
 }
 
 function annotationsButton$1() {
+  const annotationsButton = document.createElement("button");
+  annotationsButton.className = "button";
+  annotationsButton.id = "annotationsButton";
 
-    const annotationsButton = document.createElement("button");
-    annotationsButton.className = "button";
-    annotationsButton.id = "annotationsButton";
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
-    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svgEl.setAttribute("width", "15");
-    svgEl.setAttribute("height", "15");
-    svgEl.setAttribute("viewBox", "0 0 24 24");
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M0 18.343l5.656 5.657 18.344-18.343-5.657-5.657-18.343 18.343zm21.171-12.686l-15.514 15.514-2.829-2.829 1.04-1.008 2.122 2.122.707-.707-2.122-2.122 1.414-1.414 1.414 1.414.708-.708-1.414-1.414 1.414-1.414 1.414 1.414.707-.707-1.414-1.414 1.414-1.414 2.122 2.122.707-.708-2.121-2.122 1.414-1.414 1.414 1.414.707-.707-1.414-1.414 1.414-1.414 1.414 1.414.707-.707-1.414-1.414 1.414-1.415 2.121 2.122.707-.707-2.121-2.122 1.039-1.071 2.829 2.83z"
+  );
 
-    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-    path1.setAttribute("d", "M1.438 16.873l-1.438 7.127 7.127-1.437 16.874-16.872-5.69-5.69-16.873 16.872zm1.12 4.572l.722-3.584 2.86 2.861-3.582.723zm18.613-15.755l-13.617 13.617-2.86-2.861 13.617-13.617 2.86 2.861z");
+  svgEl.appendChild(path1);
+  annotationsButton.appendChild(svgEl);
 
-    svgEl.appendChild(path1);
-    annotationsButton.appendChild(svgEl);
+  return annotationsButton;
+}
 
+function helpButton() {
+  const helpButton = document.createElement("button");
+  helpButton.className = "button";
+  helpButton.id = "help-button";
 
-    return annotationsButton;
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
 
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M14.601 21.5c0 1.38-1.116 2.5-2.499 2.5-1.378 0-2.499-1.12-2.499-2.5s1.121-2.5 2.499-2.5c1.383 0 2.499 1.119 2.499 2.5zm-2.42-21.5c-4.029 0-7.06 2.693-7.06 8h3.955c0-2.304.906-4.189 3.024-4.189 1.247 0 2.57.828 2.684 2.411.123 1.666-.767 2.511-1.892 3.582-2.924 2.78-2.816 4.049-2.816 7.196h3.943c0-1.452-.157-2.508 1.838-4.659 1.331-1.436 2.986-3.222 3.021-5.943.047-3.963-2.751-6.398-6.697-6.398z"
+  ); //change path
+
+  svgEl.appendChild(path1);
+  helpButton.appendChild(svgEl);
+
+  let helpButtonActive = false;
+
+  helpButton.onclick = () => {
+    helpButtonActive = !helpButtonActive;
+    if (helpButtonActive) {
+      helpButton.classList.add("active");
+      document.getElementById("helpdoc").style.display = "initial";
+    } else {
+      helpButton.classList.remove("active");
+      document.getElementById("helpdoc").style.display = "none";
+    }
+  };
+
+  return helpButton;
 }
 
 function createIfcTreeMenu() {
-    const ifcTreeMenuDiv = document.createElement("div");
-    ifcTreeMenuDiv.className = "ifc-tree-menu";
-    ifcTreeMenuDiv.id = "ifc-tree-menu";
+  const ifcTreeMenuDiv = document.createElement("div");
+  ifcTreeMenuDiv.className = "ifc-tree-menu";
+  ifcTreeMenuDiv.id = "ifc-tree-menu";
+  ifcTreeMenuDiv.style.display = "none";
 
-    const myUL = document.createElement("ul");
-    myUL.id = "myUL";
+  const myUL = document.createElement("ul");
+  myUL.id = "myUL";
 
-    const treeRoot = document.createElement("li");
-    treeRoot.id = "tree-root";
+  const treeRoot = document.createElement("li");
+  treeRoot.id = "tree-root";
 
-    const caretSpan = document.createElement("span");
-    caretSpan.className = "caret";
-    const ulNested = document.createElement("ul");
-    ulNested.className = "nested";
+  const caretSpan = document.createElement("span");
+  caretSpan.className = "caret";
+  const ulNested = document.createElement("ul");
+  ulNested.className = "nested";
 
-   
+  treeRoot.appendChild(caretSpan);
+  treeRoot.appendChild(ulNested);
+  myUL.appendChild(treeRoot);
+  ifcTreeMenuDiv.appendChild(myUL);
 
-    treeRoot.appendChild(caretSpan);
-    treeRoot.appendChild(ulNested);
-    myUL.appendChild(treeRoot);
-    ifcTreeMenuDiv.appendChild(myUL);
-
-    document.body.appendChild(ifcTreeMenuDiv);
-
+  document.body.appendChild(ifcTreeMenuDiv);
 }
 
 function createIfcPropertyMenu() {
-    const ifcPropertyMenuDiv = document.createElement("div");
-    ifcPropertyMenuDiv.className = "ifc-property-menu bottom_right";
-    ifcPropertyMenuDiv.id = "ifc-property-menu";
+  const ifcPropertyMenuDiv = document.createElement("div");
+  ifcPropertyMenuDiv.className = "ifc-property-menu bottom_right";
+  ifcPropertyMenuDiv.id = "ifc-property-menu";
+  ifcPropertyMenuDiv.style.display = "none";
 
-    const ifcPropertyItem = document.createElement("div");
-    ifcPropertyItem.className = "ifc-property-item";
+  const ifcPropertyItem = document.createElement("div");
+  ifcPropertyItem.className = "ifc-property-item";
 
-    const key = document.createElement("div");
-    key.innerText = "Property";
+  const key = document.createElement("div");
+  key.innerText = "Property";
 
-    const ifcPropertyValue = document.createElement("div");
-    ifcPropertyValue.className = "ifc-property-value";
-    ifcPropertyValue.innerText = "Value";
+  const ifcPropertyValue = document.createElement("div");
+  ifcPropertyValue.className = "ifc-property-value";
+  ifcPropertyValue.innerText = "Value";
 
-    const ifcPropMenuRoot = document.createElement("div");
-    ifcPropMenuRoot.id = "ifc-property-menu-root";
+  const ifcPropMenuRoot = document.createElement("div");
+  ifcPropMenuRoot.id = "ifc-property-menu-root";
 
-
-    ifcPropertyItem.appendChild(key);
-    ifcPropertyItem.appendChild(ifcPropertyValue);
-    ifcPropertyMenuDiv.appendChild(ifcPropertyItem);
-    ifcPropertyMenuDiv.appendChild(ifcPropMenuRoot);
-    document.body.appendChild(ifcPropertyMenuDiv);
-
+  ifcPropertyItem.appendChild(key);
+  ifcPropertyItem.appendChild(ifcPropertyValue);
+  ifcPropertyMenuDiv.appendChild(ifcPropertyItem);
+  ifcPropertyMenuDiv.appendChild(ifcPropMenuRoot);
+  document.body.appendChild(ifcPropertyMenuDiv);
 }
 
-//make golabl and import here and bimserver.js
-const projects = [ {
-    name: "A-MEP",
-    id: "3145729"
-}, {
-    name: "TESTED_Simple_project_01",
-    id : "2883585"
-}, {
-    name: "TESTED_Simple_project_02",
-    id: "2949121"
-}, {
-    name: "rac_advanced_sample_project",
-    id: "3080193"
-}, {
-    name: "rac_basic_sample_project",
-    id: "3014657"
-}];
+function createHelpInfo() {
+  const helpDocDiv = document.createElement("div");
+  helpDocDiv.id = "helpdoc";
 
-// List of categories names 
+  helpDocDiv.style.display = "none";
+
+  const helpDocImg = document.createElement("img");
+  helpDocImg.src = "./ifcjsapphelp.png";
+  helpDocImg.className = "helpdoc helpdoc-position ifc-property-menu";
+
+  helpDocDiv.appendChild(helpDocImg);
+  document.body.appendChild(helpDocDiv);
+}
+
+const projects = [
+  {
+    name: "Duplex-A-MEP",
+    id: "3145729",
+  },
+  {
+    name: "TESTED_Simple_project_01",
+    id: "2883585",
+  },
+  {
+    name: "TESTED_Simple_project_02",
+    id: "2949121",
+  },
+  {
+    name: "rac_advanced_sample_project",
+    id: "3080193",
+  },
+  {
+    name: "rac_basic_sample_project",
+    id: "3014657",
+  },
+];
+
+// List of categories names
 const categories = {
-    IFCWALLSTANDARDCASE,
-    IFCSLAB,
-    IFCFURNISHINGELEMENT,
-    IFCDOOR,
-    IFCWINDOW,
-    IFCPLATE,
-    IFCMEMBER,
-    IFCSPACE,
-    IFCSITE,
-    IFCROOF,
-    IFCBUILDINGELEMENTPROXY
-  };
+  IFCWALLSTANDARDCASE,
+  IFCSLAB,
+  IFCFURNISHINGELEMENT,
+  IFCDOOR,
+  IFCWINDOW,
+  IFCPLATE,
+  IFCMEMBER,
+  IFCSPACE,
+  IFCSITE,
+  IFCROOF,
+  IFCBUILDINGELEMENTPROXY,
+};
 
 const container = document.getElementById("viewer-container");
 const viewer = new IfcViewerAPI({
   container,
   backgroundColor: new Color(255, 255, 255),
-}); //white
+});
 
 viewer.axes.setAxes();
 viewer.grid.setGrid();
@@ -113133,7 +113141,7 @@ const currentProjectID = url.searchParams.get("id"); //bimserver project id - us
 
 //const socket = io(socketiourl);
 
-//otherwise socket app will crash 
+//otherwise socket app will crash
 // if (currentProjectID !== null)
 //     {
 //         console.log("getting latest revision", currentProjectID);
@@ -113154,28 +113162,8 @@ async function loadIfc(url) {
 
   await setupAllCategories(); //for ifc categories filter
   createTreeMenu(ifcProject);
-
-  //floorplans try
-  // await viewer.plans.computeAllPlanViews(model.modelID);
-
-  // const allPlans = viewer.plans.getAll(model.modelID);
-
-  // const storeys = ifcProject.children[0].children[0].children;
-
-  // for (const plan of allPlans)
-  // {
-  //   const currentPlan = viewer.plans.planLists[model.modelID][plan];
-  //   const planView = viewer.edges.toggle('example', true);
-
-  //   const storey = storeys.find(storey => storey.expressID === currentPlan.expressID);
-
-  //   drawProjectedItems(storey,plan, model.modelID);
-    
-  //  // console.log(currentPlan)
-  //   //console.log(planView)
-  // }
-
 }
+
 //loads the model -
 // socket.on("fileName", (fileName) => {
 //   let path = socketiourl + fileName; //change here too or make it global variable
@@ -113185,58 +113173,41 @@ async function loadIfc(url) {
 
 //const resultJson = await viewer.IFC.properties.serializeAllProperties()
 
-
 const scene = viewer.context.getScene(); //for showing/hiding categories
 
 let path;
 
-
-for (let proj of projects)
-{
-    //createCardDiv(proj.name, proj.id);
-    console.log(proj.name, proj.id);
-      if (proj.id === currentProjectID) {
+for (let proj of projects) {
+  //createCardDiv(proj.name, proj.id);
+  console.log(proj.name, proj.id);
+  if (proj.id === currentProjectID) {
     let fileName = proj.name;
     path = "./models/" + fileName + ".ifc"; // get path into this
     console.log(path);
-    }
+  }
 }
-// for (let proj of projects)
-// {
-//   console.log(proj.name, proj.id);
-//   if (proj.id === currentProjectID) {
-//     let fileName = elem.name;
-//     path = "./models/" + fileName; // get path into this
-//     console.log(path);
-//   }
-// }
 
 loadIfc(path);
-//window.ondblclick = () => viewer.IFC.selector.pickIfcItem();
 
-//get ifc properties, need to add the html element etc..
+//UI elements
 
 createIfcPropertyMenu();
 
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
 createIfcTreeMenu();
-document.getElementById("ifc-property-menu").style.display = "none";
-document.getElementById("ifc-tree-menu").style.display = "none";
+//document.getElementById("ifc-property-menu").style.display = "none";
+//document.getElementById("ifc-tree-menu").style.display = "none";
 
+createCheckboxes();
+//document.getElementById("checkboxes").style.display = "none";
 
-//createTabs(); //nned to move this to dblclick events..
-
-//modelName("Test IFC model"); //need to get the model name from bimserver - from project id? - call getProjects socket event, get the name from list of ids where id is in url
-
-createCheckboxes(); //this is not working
-//createEnergyButton("energyuse-button");
-
-document.getElementById("checkboxes").style.display = "none";
+//help info
+createHelpInfo();
+//document.getElementById("helpdoc").style.display = "none";
 
 toolbarTop();
 toolbarBottom();
-
 
 //select IFC elements
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
@@ -113246,22 +113217,11 @@ window.ondblclick = async () => {
   if (!result) return;
   const { modelID, id } = result;
   const props = await viewer.IFC.getProperties(modelID, id, true, false);
-  console.log(props); 
+  console.log(props);
   console.log(props.psets);
 
- 
-
-  // for (elem in props.psets)
-  // {
-  //   if (elem.value === "IfcElementQuantity")
-  //   {
-  //     console.log("expressID: " + elem.value.expressID);
-  //   }
-  //   console.log(elem.key, elem.value);
-  // }
- // console.log(props);
   createPropertiesMenu(props);
-  //createTabs(props, typeProps);
+
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
 
@@ -113270,14 +113230,12 @@ window.ondblclick = async () => {
     viewer.clipper.createPlane();
   }
 
-  if (measurementsActive)
-  {
-      viewer.dimensions.create();
+  if (measurementsActive) {
+    viewer.dimensions.create();
   }
-
 };
 
-//set up clipping planes - try to put inside function (see three model loader - switch views button)
+//set up clipping planes
 const clipButton = document.getElementById("clipPlaneButton");
 
 let clippingPlanesActive = false;
@@ -113286,7 +113244,7 @@ clipButton.onclick = () => {
   viewer.clipper.active = clippingPlanesActive;
 
   if (clippingPlanesActive) {
-    //add or remove active class depending on wether button is clicked and clipping planes are active
+    //add or remove active class depending on whether button is clicked and clipping planes are active
     clipButton.classList.add("active");
   } else {
     clipButton.classList.remove("active");
@@ -113295,15 +113253,14 @@ clipButton.onclick = () => {
 
 //on right mouse click - remove these events?
 window.onauxclick = () => {
-    if (clippingPlanesActive) {
-      viewer.clipper.createPlane();
-    }
+  if (clippingPlanesActive) {
+    viewer.clipper.createPlane();
+  }
 
-    if (measurementsActive)
-    {
-        viewer.dimensions.create();
-    }
-  };
+  if (measurementsActive) {
+    viewer.dimensions.create();
+  }
+};
 
 window.onkeydown = (event) => {
   if (event.code === "Delete" && clippingPlanesActive) {
@@ -113312,211 +113269,211 @@ window.onkeydown = (event) => {
     //console.log("delete")
   }
 
-      if(event.code === 'Delete' && measurementsActive) {
-        viewer.dimensions.delete();
-    }
+  if (event.code === "Delete" && measurementsActive) {
+    viewer.dimensions.delete();
+  }
 };
 
-//notes measurements
+//notes / annotations
 
 const annotationsButton = document.getElementById("annotationsButton");
 let measurementsActive = false;
 
 annotationsButton.onclick = () => {
+  viewer.dimensions.active = true;
+  viewer.dimensions.previewActive = true;
+  measurementsActive = !measurementsActive;
 
-    viewer.dimensions.active = true;
-    viewer.dimensions.previewActive = true;
-    measurementsActive = !measurementsActive;
-
-    if (measurementsActive) {
-        annotationsButton.classList.add("active");
-    } else {
-        annotationsButton.classList.remove("active");
-        viewer.dimensions.active = false;
-        viewer.dimensions.previewActive = false;
-    }
-
+  if (measurementsActive) {
+    annotationsButton.classList.add("active");
+  } else {
+    annotationsButton.classList.remove("active");
+    viewer.dimensions.active = false;
+    viewer.dimensions.previewActive = false;
+  }
 };
 
+//help button
+//const helpButton = document.getElementById("help-button");
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
 for (let i = 0; i < toggler.length; i++) {
-    toggler[i].onclick = () => {
-        toggler[i].parentElement.querySelector(".nested").classList.toggle("tree-active");
-        toggler[i].classList.toggle("caret-down");
-    };
+  toggler[i].onclick = () => {
+    toggler[i].parentElement
+      .querySelector(".nested")
+      .classList.toggle("tree-active");
+    toggler[i].classList.toggle("caret-down");
+  };
 }
 
 // hiding/filters
-  
-  // Gets the name of a category
-  function getName(category) {
-    const names = Object.keys(categories);
-    return names.find(name => categories[name] === category);
-  }
-  
+
+// Gets the name of a category
+function getName(category) {
+  const names = Object.keys(categories);
+  return names.find((name) => categories[name] === category);
+}
+
 // Gets all the items of a category
 async function getAll(category) {
-	return viewer.IFC.loader.ifcManager.getAllItemsOfType(0, category, false);
+  return viewer.IFC.loader.ifcManager.getAllItemsOfType(0, category, false);
 }
-  
-  // Creates a new subset containing all elements of a category
+
+// Creates a new subset containing all elements of a category
 async function newSubsetOfType(category) {
-	const ids = await getAll(category);
-	return viewer.IFC.loader.ifcManager.createSubset({
-		modelID: 0,
-		scene,
-		ids,
-		removePrevious: true,
-		customID: category.toString(),
-	});
+  const ids = await getAll(category);
+  return viewer.IFC.loader.ifcManager.createSubset({
+    modelID: 0,
+    scene,
+    ids,
+    removePrevious: true,
+    customID: category.toString(),
+  });
 }
 
 // Stores the created subsets
 const subsets = {};
-  
-  async function setupAllCategories() {
-      const allCategories = Object.values(categories);
-      for (let i = 0; i < allCategories.length; i++) {
-          const category = allCategories[i];
-          await setupCategory(category);
-      }
-  }
-  
-  // Creates a new subset and configures the checkbox
-  async function setupCategory(category) {
-      subsets[category] = await newSubsetOfType(category);
-      setupCheckBox(category);
-  }
-  
-  // Sets up the checkbox event to hide / show elements
-  function setupCheckBox(category) {
-      const name = getName(category);
-      const checkBox = document.getElementById(name);
-      checkBox.addEventListener('change', (event) => {
-          const checked = event.target.checked;
-          const subset = subsets[category];
-          if (checked) scene.add(subset);
-          else subset.removeFromParent();
-      });
-  }
-  
 
+async function setupAllCategories() {
+  const allCategories = Object.values(categories);
+  for (let i = 0; i < allCategories.length; i++) {
+    const category = allCategories[i];
+    await setupCategory(category);
+  }
+}
 
+// Creates a new subset and configures the checkbox
+async function setupCategory(category) {
+  subsets[category] = await newSubsetOfType(category);
+  setupCheckBox(category);
+}
+
+// Sets up the checkbox event to hide / show elements
+function setupCheckBox(category) {
+  const name = getName(category);
+  const checkBox = document.getElementById(name);
+  checkBox.addEventListener("change", (event) => {
+    const checked = event.target.checked;
+    const subset = subsets[category];
+    if (checked) scene.add(subset);
+    else subset.removeFromParent();
+  });
+}
 
 // Spatial tree menu
 
 function createTreeMenu(ifcProject) {
-    const root = document.getElementById("tree-root");
-    removeAllChildren(root);
-    const ifcProjectNode = createNestedChild(root, ifcProject);
-    ifcProject.children.forEach(child => {
-        constructTreeMenuNode(ifcProjectNode, child);
-    });
+  const root = document.getElementById("tree-root");
+  removeAllChildren(root);
+  const ifcProjectNode = createNestedChild(root, ifcProject);
+  ifcProject.children.forEach((child) => {
+    constructTreeMenuNode(ifcProjectNode, child);
+  });
 }
 
 function nodeToString(node) {
-    return `${node.type} - ${node.expressID}`
+  return `${node.type} - ${node.expressID}`;
 }
 
 function constructTreeMenuNode(parent, node) {
-    const children = node.children;
-    if (children.length === 0) {
-        createSimpleChild(parent, node);
-        return;
-    }
-    const nodeElement = createNestedChild(parent, node);
-    children.forEach(child => {
-        constructTreeMenuNode(nodeElement, child);
-    });
+  const children = node.children;
+  if (children.length === 0) {
+    createSimpleChild(parent, node);
+    return;
+  }
+  const nodeElement = createNestedChild(parent, node);
+  children.forEach((child) => {
+    constructTreeMenuNode(nodeElement, child);
+  });
 }
 
 function createNestedChild(parent, node) {
-    const content = nodeToString(node);
-    const root = document.createElement('li');
-    createTitle(root, content);
-    const childrenContainer = document.createElement('ul');
-    childrenContainer.classList.add("nested");
-    root.appendChild(childrenContainer);
-    parent.appendChild(root);
-    return childrenContainer;
+  const content = nodeToString(node);
+  const root = document.createElement("li");
+  createTitle(root, content);
+  const childrenContainer = document.createElement("ul");
+  childrenContainer.classList.add("nested");
+  root.appendChild(childrenContainer);
+  parent.appendChild(root);
+  return childrenContainer;
 }
 
 function createTitle(parent, content) {
-    const title = document.createElement("span");
-    title.classList.add("caret");
-    title.onclick = () => {
-        title.parentElement.querySelector(".nested").classList.toggle("tree-active");
-        title.classList.toggle("caret-down");
-    };
-    title.textContent = content;
-    parent.appendChild(title);
+  const title = document.createElement("span");
+  title.classList.add("caret");
+  title.onclick = () => {
+    title.parentElement
+      .querySelector(".nested")
+      .classList.toggle("tree-active");
+    title.classList.toggle("caret-down");
+  };
+  title.textContent = content;
+  parent.appendChild(title);
 }
 
 function createSimpleChild(parent, node) {
-    const content = nodeToString(node);
-    const childNode = document.createElement('li');
-    childNode.classList.add('leaf-node');
-    childNode.textContent = content;
-    parent.appendChild(childNode);
+  const content = nodeToString(node);
+  const childNode = document.createElement("li");
+  childNode.classList.add("leaf-node");
+  childNode.textContent = content;
+  parent.appendChild(childNode);
 
-    childNode.onmouseenter = () => {
-        viewer.IFC.selector.prepickIfcItemsByID(0, [node.expressID]);
-    };
+  childNode.onmouseenter = () => {
+    viewer.IFC.selector.prepickIfcItemsByID(0, [node.expressID]);
+  };
 
-    childNode.onclick = async () => {
-        viewer.IFC.selector.pickIfcItemsByID(0, [node.expressID], true);
+  childNode.onclick = async () => {
+    viewer.IFC.selector.pickIfcItemsByID(0, [node.expressID], true);
 
-        let idsArray = [node.expressID];
+    let idsArray = [node.expressID];
 
-        const props = await viewer.IFC.getProperties(0, idsArray[0], true, false); 
-        console.log(props); //call the function here
-        createPropertiesMenu(props);
-        document.getElementById("ifc-property-menu").style.display = "initial";
-        propertiesButton.classList.add("active");
-    };
+    const props = await viewer.IFC.getProperties(0, idsArray[0], true, false);
+    console.log(props); //call the function here
+    createPropertiesMenu(props);
+    document.getElementById("ifc-property-menu").style.display = "initial";
+    propertiesButton.classList.add("active");
+  };
 }
 
-
-//IFC properties menu functions - crete tabs here https://www.w3schools.com/howto/howto_js_tabs.asp
+//IFC properties menu functions
 function createPropertiesMenu(properties) {
-    //console.log(properties);
+  //console.log(properties);
 
-    //createTabs()
-  
-    removeAllChildren(propsGUI);
-  
-    delete properties.psets;
-    delete properties.mats;
-    delete properties.type;
-  
-    for (let key in properties) {
-      createPropertyEntry(key, properties[key]);
-    }
+  //createTabs()
+
+  removeAllChildren(propsGUI);
+
+  delete properties.psets;
+  delete properties.mats;
+  delete properties.type;
+
+  for (let key in properties) {
+    createPropertyEntry(key, properties[key]);
   }
-  
-  function createPropertyEntry(key, value) {
-    const propContainer = document.createElement("div");
-    propContainer.classList.add("ifc-property-item");
-  
-    if (value === null || value === undefined) value = "undefined";
-    else if (value.value) value = value.value;
-  
-    const keyElement = document.createElement("div");
-    keyElement.textContent = key;
-    propContainer.appendChild(keyElement);
-  
-    const valueElement = document.createElement("div");
-    valueElement.classList.add("ifc-property-value");
-    valueElement.textContent = value;
-    propContainer.appendChild(valueElement);
-  
-    propsGUI.appendChild(propContainer);
+}
+
+function createPropertyEntry(key, value) {
+  const propContainer = document.createElement("div");
+  propContainer.classList.add("ifc-property-item");
+
+  if (value === null || value === undefined) value = "undefined";
+  else if (value.value) value = value.value;
+
+  const keyElement = document.createElement("div");
+  keyElement.textContent = key;
+  propContainer.appendChild(keyElement);
+
+  const valueElement = document.createElement("div");
+  valueElement.classList.add("ifc-property-value");
+  valueElement.textContent = value;
+  propContainer.appendChild(valueElement);
+
+  propsGUI.appendChild(propContainer);
+}
+
+function removeAllChildren(element) {
+  while (element.firstChild) {
+    element.removeChild(element.firstChild);
   }
-  
-  function removeAllChildren(element) {
-    while (element.firstChild) {
-      element.removeChild(element.firstChild);
-    }
-  }
+}
