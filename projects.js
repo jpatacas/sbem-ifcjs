@@ -1,3 +1,7 @@
+export const socketiourl = "http://localhost:8088/"; //edit socket.io url here
+
+export const socket = io(socketiourl);
+
 export const projects = [
   {
     name: "Duplex-A-MEP",
