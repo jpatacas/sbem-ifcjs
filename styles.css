@@ -31,7 +31,7 @@ h2 {
 
 h3 {
     font-weight: 400;
-    font-size: 0.8rem;
+    font-size: 1rem;
 }
 
 p {
@@ -55,6 +55,17 @@ a {
 
 .top {
     top: 1rem;
+}
+
+.left {
+    left: 2rem;
+}
+
+.helpdoc-position {
+    top: 70%;
+    left: 65%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
 }
 
 .spinning {
@@ -105,6 +116,11 @@ a {
     position: absolute;
     right: 1rem;
     top: 1rem;
+    align-items: center;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    z-index: 1;
 }
 
 /* From uiverse.io by @fanishah */
@@ -137,9 +153,9 @@ a {
     padding: 1rem;
 }
 .card:hover {
-    transform: translateY(-1.5rem);
+    transform: translateY(-0.5rem);
     border: var(--light-blue) 0.1em solid;
-    border-radius: 2.5rem 0 2.5rem 0;
+    /* border-radius: 2.5rem 0 2.5rem 0; */
     cursor: pointer;
 }
 
@@ -181,10 +197,49 @@ a {
     transform: translateY(-1px);
 }
 
+.homebutton {
+    padding: 1.5rem;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    font-weight: 500;
+    color: #000;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    border-radius: 45px;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease 0s;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+}
+
+.homebutton:hover {
+    background-color: var(--light-blue);
+    box-shadow: 0px 15px 20px rgba(46, 104, 229, 0.4);
+    color: #fff;
+    fill: #fff;
+    transform: translateY(-7px);
+}
+
+.homebutton:active {
+    transform: translateY(-1px);
+}
+
 .simple-card-container {
     display: flex;
     justify-content: center;
     position: absolute;
+    width: 100%;
+}
+
+.simple-card-container-home {
+    display: flex;
+    justify-content: left;
+    position: fixed;
     width: 100%;
 }
 
@@ -210,7 +265,13 @@ a {
     border: 1px solid gray;
     width: 20rem;
     position: absolute;
-    background-color: white;
+    /* background-color: white; */
+    
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+
 }
 
 .ifc-property-item {
@@ -226,14 +287,35 @@ a {
     text-align: right;
 }
 
+/* checkboxes */
+
+.checkbox-item {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0.2rem;
+    border-bottom: solid 1px gray;
+}
+
+.checkbox-value {
+    width: 100%;
+    text-align: right;
+}
+
 /*Tree view: https://www.w3schools.com/howto/howto_js_treeview.asp*/
 
 .ifc-tree-menu {
     position: absolute;
     overflow-y: scroll;
-    background-color: white;
+    /* background-color: white; */
     height: 100vh;
     
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+    z-index: 1;
+
 }
 
 li ul {
@@ -306,40 +388,13 @@ ul, #myUL {
     border-radius: 4px;
 }
 
-/* Style the tab */
-.tab {
-    overflow: hidden;
-    border: 1px solid #ccc;
-    background-color: #f1f1f1;
-    width: 34rem;
-    position: absolute;
-  }
-  
-  /* Style the buttons that are used to open the tab content */
-  .tab button {
-    background-color: inherit;
-    float: left;
-    border: none;
-    outline: none;
-    cursor: pointer;
-    padding: 14px 16px;
-    transition: 0.3s;
-  }
-  
-  /* Change background color of buttons on hover */
-  .tab button:hover {
-    background-color: #ddd;
-  }
-  
-  /* Create an active/current tablink class */
-  .tab button.active {
-    background-color: #ccc;
-  }
-  
-  /* Style the tab content */
-  .tabcontent {
-    display: none;
-    padding: 6px 12px;
-    border: 1px solid #ccc;
-    border-top: none;
-  }
+  .helpdoc {
+    position: fixed;
+    width: 30%;
+    height: 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent;
+}
