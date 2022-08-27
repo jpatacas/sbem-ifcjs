@@ -48,9 +48,32 @@ function buildMap(keys, values) {
   return map;
 }
 
-const socketiourl = "http://localhost:8088/"; //edit socket.io url here
+const socketiourl = "edit socket.io url here";
 
 const socket = io(socketiourl);
+
+// export const projects = [
+//   {
+//     name: "Duplex-A-MEP",
+//     id: "3145729",
+//   },
+//   {
+//     name: "TESTED_Simple_project_01",
+//     id: "2883585",
+//   },
+//   {
+//     name: "TESTED_Simple_project_02",
+//     id: "2949121",
+//   },
+//   {
+//     name: "rac_advanced_sample_project",
+//     id: "3080193",
+//   },
+//   {
+//     name: "rac_basic_sample_project",
+//     id: "3014657",
+//   },
+// ];
 
 // for (let proj of projects)
 // {
@@ -59,9 +82,6 @@ const socket = io(socketiourl);
 // }
 
 //get list of projects from bimserver, create a card for each project
-
-//local
-//const socket = io("http://localhost:8088/");
 
 socket.on("hello", (arg) => {
     console.log(arg);

@@ -9,9 +9,6 @@ import { socket } from './projects.js';
 
 //get list of projects from bimserver, create a card for each project
 
-//local
-//const socket = io("http://localhost:8088/");
-
 socket.on("hello", (arg) => {
     console.log(arg);
 })
