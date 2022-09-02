@@ -1,4 +1,4 @@
-export const socketiourl = "edit socket.io url here";
+export const socketiourl = "http://localhost:8088/";
 
 export const socket = io(socketiourl);
 

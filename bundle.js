@@ -112698,6 +112698,7 @@ class IfcViewerAPI {
 
 //UI functions
 
+
 function toolbarTop() {
   const cardContainer = document.createElement("div");
   cardContainer.className = "simple-card-container-home top left";
@@ -113089,7 +113090,7 @@ function createHelpInfo() {
   document.body.appendChild(helpDocDiv);
 }
 
-const socketiourl = "edit socket.io url here";
+const socketiourl = "http://localhost:8088/";
 
 const socket = io(socketiourl);
 

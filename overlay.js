@@ -1,6 +1,6 @@
 //UI functions
 
-//needs to be fixed, it is over other html elements!
+//needs to be fixed, it is over other html elements - change in css
 export function modelName(modelName) {
   const modelNameContainer = document.createElement("div");
   modelNameContainer.className = "simple-card-container top";
@@ -13,6 +13,41 @@ export function modelName(modelName) {
   modelNameContainer.appendChild(modelTitle);
   document.body.appendChild(modelNameContainer);
 }
+
+export function uploadCard() {
+
+      //upload - no svg? - how to remove choose file box?
+      const uploadCard = document.createElement('input');
+      uploadCard.type = 'file';
+      uploadCard.id = 'file-input';
+      uploadCard.className = 'button';
+  
+      const card = document.createElement("div");
+      card.className = "card";
+    
+      const svgElement = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg"
+      );
+      svgElement.setAttribute("width", "24");
+      svgElement.setAttribute("height", "24");
+      svgElement.setAttribute("viewBox", "0 0 24 24");
+    
+      const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      path1.setAttribute(
+        "d",
+        "m11 11h-7.25c-.414 0-.75.336-.75.75s.336.75.75.75h7.25v7.25c0 .414.336.75.75.75s.75-.336.75-.75v-7.25h7.25c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-7.25v-7.25c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+      );
+    
+      svgElement.appendChild(path1);
+      card.appendChild(svgElement);
+    
+      card.appendChild(uploadCard);
+    
+      const projectContainer = document.getElementById("projects-container");
+      projectContainer.appendChild(card);
+}
+
 
 export function toolbarTop() {
   const cardContainer = document.createElement("div");
