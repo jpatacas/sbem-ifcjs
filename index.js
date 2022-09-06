@@ -1,7 +1,6 @@
-import { checkinIFC } from './bimserver-client-upload.js';
-import {createCardDiv, buildMap, uploadCard, modelName} from './overlay.js';
-import { socket } from './projects.js';
-
+import { checkinIFC } from "./bimserver-client-upload.js";
+import { createCardDiv, buildMap, uploadCard, modelName } from "./overlay.js";
+import { socket } from "./projects.js";
 
 // for (let proj of projects)
 // {
@@ -11,92 +10,63 @@ import { socket } from './projects.js';
 
 //get list of projects from bimserver, create a card for each project
 
-
-
 socket.on("hello", (arg) => {
-    console.log(arg);
-})
+  console.log(arg);
+});
 
 uploadCard();
 
 socket.emit("getProjects", "getProjects"); //get projects from a bimserver
 
-socket.on("projectIds",(resname, reslist) => {
+socket.on("projectIds", (resname, reslist) => {
+  let projectsMap = buildMap(resname, reslist);
 
-    let projectsMap = buildMap(resname, reslist);
+  projectsMap.forEach(function (value, key) {
+    createCardDiv(key, value);
+  });
 
-    projectsMap.forEach(function (value, key) {
-        createCardDiv(key, value);
-    });
-
-    //console.log(resname + reslist) 
-    //console.log("projectIds")
-
-}
-)
+  //console.log(resname + reslist)
+  //console.log("projectIds")
+});
 
 const input = document.getElementById("file-input");
+
 input.addEventListener(
-  "change", //create project, upload file to project/bimserver 
+  "change", //create project, upload file to project/bimserver
   async (changed) => {
-
-//     var fullPath = document.getElementById('upload').value;
-// if (fullPath) {
-//     var startIndex = (fullPath.indexOf('\\') >= 0 ? fullPath.lastIndexOf('\\') : fullPath.lastIndexOf('/'));
-//     var filename = fullPath.substring(startIndex);
-//     if (filename.indexOf('\\') === 0 || filename.indexOf('/') === 0) {
-//         filename = filename.substring(1);
-//     }
-//     alert(filename);
-// }
-
-
-    //create a project and load the file to bimserver
-    
-    //let ifcFile = await changed.target.files[0];
-   // const modelURL = URL.createObjectURL(ifcFile); //pass it into bimserverapi(client)
-    console.log("input.value: " + input.value);
-
     //look for filw with above name, upload that file URL (hack only works for local folder)
-   //this (input stream? to DataHandler, pass DataHandler)
-   let ifcURLlocal = input.value;
-  
-   
-   let ifcURL2 = ifcURLlocal.substr(12);
+    //this (input stream? to DataHandler, pass DataHandler)
+    let ifcURLlocal = input.value;
 
-   
-   
-   let path = "http://localhost:5500/models/"
+    let modelName = ifcURLlocal.substr(12); //get just the modelname
 
-   let ifcURL = path + ifcURL2;
+    let path = "http://localhost:5500/models/";
 
-   console.log("ifcl url path: " + ifcURL);
-    checkinIFC(ifcURL, ifcURL2);
-    
+    let ifcURL = path + modelName;
 
-    //socket.emit("getProjects", "getProjects");
+    let modelNameNoExt = modelName.substr(0, modelName.length - 4);
 
-    //open the page with the model
-    //get model id..
-    //socket get projects
-    //get where proj name = reslist
+    console.log("model name: " + modelNameNoExt);
+    console.log("ifc url path: " + ifcURL);
+    //checkinIFC(ifcURL, modelName); //do this serverside, return the project id and go to that url
 
-    socket.emit("getProjects", "getProjects"); //get projects from a bimserver
+    //socket.emit("createProject", "testproject" + Math.random())
 
-    socket.on("projectIds",(resname, reslist) => {
+    socket.emit("uploadModel", modelNameNoExt, ifcURL);
 
-    let projectsMap = buildMap(resname, reslist);
+    //await uploadModel(modelNameNoExt, ifcURL);
 
-    projectsMap.forEach(function (value, key) {
-        console.log(key, value);
+    //howto use async await here??
+    socket.on("newProjectData", (fileName, poid) => {
+      console.log("new filename: " + fileName, "new project id: " + poid);
+      window.location.href = "./bimviewer.html" + `?id=${poid}`;
+
+      //issues with existing/repeat project names??
     });
+  }
+);
 
-    //console.log(resname + reslist) 
-    //console.log("projectIds")
-
-}
-)
-
-    //window.location.href = "https://www.example.com";
-
-  });
+// async function uploadModel (modelName, URL) 
+// {
+//   socket.emit("uploadModel", modelName, URL);
+// }
