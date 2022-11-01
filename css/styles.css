@@ -318,6 +318,20 @@ a {
 
 }
 
+.energy-menu {
+    position: absolute;
+    overflow-y: scroll;
+    /* background-color: white; */
+    height: 100vh;
+    right: 0;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+    z-index: 1;
+
+}
+
 li ul {
     user-select: none;
     cursor: pointer;
@@ -397,4 +411,14 @@ ul, #myUL {
     justify-content: center;
     align-items: center;
     background-color: transparent;
+}
+
+.benchmark-plot {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  background-color: rgb(255, 255, 255);
+  
+  font-size: 25px;
+  z-index: 1;
 }

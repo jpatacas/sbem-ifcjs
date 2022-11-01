@@ -1,5 +1,6 @@
 //UI functions
 
+
 //needs to be fixed, it is over other html elements - change in css
 export function modelName(modelName) {
   const modelNameContainer = document.createElement("div");
@@ -76,6 +77,7 @@ export function toolbarBottom() {
   toolbar.appendChild(clipPlaneButton());
   toolbar.appendChild(annotationsButton());
   toolbar.appendChild(propertiesButton());
+  toolbar.appendChild(energyButton());
   toolbar.appendChild(helpButton());
 
   cardContainer.appendChild(toolbar);
@@ -290,6 +292,46 @@ function propertiesButton() {
   return propertiesButton;
 }
 
+function energyButton() {
+  const energyButton = document.createElement("button");
+  energyButton.className = "button";
+  energyButton.id = "energyButton";
+
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M13 9h9l-14 15 3-9h-9l14-15-3 9zm-8.699 5h8.086l-1.987 5.963 9.299-9.963h-8.086l1.987-5.963-9.299 9.963z"
+  );
+
+  svgEl.appendChild(path1);
+  energyButton.appendChild(svgEl);
+
+  energyButton.addEventListener(
+    "click",
+    function () {
+      if ( //here change to energy menu
+        document.getElementById("energy-menu").style.display === "initial"
+      ) {
+        document.getElementById("energy-menu").style.display = "none";
+        energyButton.classList.remove("active");
+      } else if (
+        document.getElementById("energy-menu").style.display === "none"
+      ) {
+        document.getElementById("energy-menu").style.display = "initial";
+        energyButton.classList.add("active");
+      }
+    },
+    false
+  );
+
+  return energyButton;
+}
+
 function clipPlaneButton() {
   const clipPlaneButton = document.createElement("button");
   clipPlaneButton.className = "button";
@@ -331,6 +373,7 @@ function treeButton() {
   svgEl.appendChild(path1);
   treeButton.appendChild(svgEl);
 
+  //toggle ifctree menu
   treeButton.addEventListener(
     "click",
     function () {
@@ -413,6 +456,19 @@ function helpButton() {
   return helpButton;
 }
 
+export function createEnergyMenu() {
+
+  const energyMenuDiv = document.createElement("div");
+  energyMenuDiv.className = "energy-menu";
+  energyMenuDiv.id = "energy-menu";
+  energyMenuDiv.style.display = "none";
+
+  
+
+
+  document.body.appendChild(energyMenuDiv);
+}
+
 export function createIfcTreeMenu() {
   const ifcTreeMenuDiv = document.createElement("div");
   ifcTreeMenuDiv.className = "ifc-tree-menu";
@@ -487,3 +543,18 @@ export function buildMap(keys, values) {
   }
   return map;
 }
+
+//https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+// Checking if the array lengths are same
+// and none of the array is empty
+export function convertToObj(a, b){
+  if(a.length != b.length || a.length == 0 || b.length == 0){
+   return null;
+  }
+  let obj = {};
+   
+// Using the foreach method
+  a.forEach((k, i) => {obj[k] = b[i]})
+  return obj;
+}
+

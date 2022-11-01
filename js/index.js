@@ -1,5 +1,5 @@
 import { createCardDiv, buildMap, uploadCard} from "./overlay.js";
-import { socket } from "./projects.js";
+import { socket, socketpy } from "./projects.js";
 
 // for (let proj of projects)
 // {
@@ -8,6 +8,19 @@ import { socket } from "./projects.js";
 // }
 
 //get list of projects from bimserver, create a card for each project
+
+socketpy.on('connect', () => {
+  console.log('connected');
+  socketpy.emit('sum', {numbers: [1,2]});
+})
+
+// socketpy.on('sum_result', (data) => {console.log(data)}
+// )
+// socketpy.on('test', (test) => { console.log(test)})
+
+socketpy.on('disconnect', () => {
+  console.log('disconnected');
+});
 
 socket.on("hello", (arg) => {
   console.log(arg);
@@ -56,8 +69,3 @@ input.addEventListener(
     });
   }
 );
-
-// async function uploadModel (modelName, URL) 
-// {
-//   socket.emit("uploadModel", modelName, URL);
-// }

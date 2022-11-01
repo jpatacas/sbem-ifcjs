@@ -1,5 +1,9 @@
 export const socketiourl = "http://localhost:8088/";
 
+export const socketpyurl = "http://localhost:8000/";
+
+export const socketpy = io(socketpyurl);
+
 export const socket = io(socketiourl);
 
 // export const projects = [

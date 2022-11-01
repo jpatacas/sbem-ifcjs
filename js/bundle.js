@@ -112726,6 +112726,7 @@ function toolbarBottom() {
   toolbar.appendChild(clipPlaneButton());
   toolbar.appendChild(annotationsButton$1());
   toolbar.appendChild(propertiesButton$1());
+  toolbar.appendChild(energyButton());
   toolbar.appendChild(helpButton());
 
   cardContainer.appendChild(toolbar);
@@ -112902,6 +112903,46 @@ function propertiesButton$1() {
   return propertiesButton;
 }
 
+function energyButton() {
+  const energyButton = document.createElement("button");
+  energyButton.className = "button";
+  energyButton.id = "energyButton";
+
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "M13 9h9l-14 15 3-9h-9l14-15-3 9zm-8.699 5h8.086l-1.987 5.963 9.299-9.963h-8.086l1.987-5.963-9.299 9.963z"
+  );
+
+  svgEl.appendChild(path1);
+  energyButton.appendChild(svgEl);
+
+  energyButton.addEventListener(
+    "click",
+    function () {
+      if ( //here change to energy menu
+        document.getElementById("energy-menu").style.display === "initial"
+      ) {
+        document.getElementById("energy-menu").style.display = "none";
+        energyButton.classList.remove("active");
+      } else if (
+        document.getElementById("energy-menu").style.display === "none"
+      ) {
+        document.getElementById("energy-menu").style.display = "initial";
+        energyButton.classList.add("active");
+      }
+    },
+    false
+  );
+
+  return energyButton;
+}
+
 function clipPlaneButton() {
   const clipPlaneButton = document.createElement("button");
   clipPlaneButton.className = "button";
@@ -112943,6 +112984,7 @@ function treeButton() {
   svgEl.appendChild(path1);
   treeButton.appendChild(svgEl);
 
+  //toggle ifctree menu
   treeButton.addEventListener(
     "click",
     function () {
@@ -113025,6 +113067,19 @@ function helpButton() {
   return helpButton;
 }
 
+function createEnergyMenu() {
+
+  const energyMenuDiv = document.createElement("div");
+  energyMenuDiv.className = "energy-menu";
+  energyMenuDiv.id = "energy-menu";
+  energyMenuDiv.style.display = "none";
+
+  
+
+
+  document.body.appendChild(energyMenuDiv);
+}
+
 function createIfcTreeMenu() {
   const ifcTreeMenuDiv = document.createElement("div");
   ifcTreeMenuDiv.className = "ifc-tree-menu";
@@ -113090,7 +113145,25 @@ function createHelpInfo() {
   document.body.appendChild(helpDocDiv);
 }
 
+//https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
+// Checking if the array lengths are same
+// and none of the array is empty
+function convertToObj(a, b){
+  if(a.length != b.length || a.length == 0 || b.length == 0){
+   return null;
+  }
+  let obj = {};
+   
+// Using the foreach method
+  a.forEach((k, i) => {obj[k] = b[i];});
+  return obj;
+}
+
 const socketiourl = "http://localhost:8088/";
+
+const socketpyurl = "http://localhost:8000/";
+
+const socketpy = io(socketpyurl);
 
 const socket = io(socketiourl);
 
@@ -113116,6 +113189,261 @@ const socket = io(socketiourl);
 //     id: "3014657",
 //   },
 // ];
+
+//import { initialEnergyAvg } from "./bimviewer.js";
+
+function boxplot_graph(
+  datalabels,
+  dataValues,
+  title,
+  htmlelem,
+  width,
+  height
+) {
+  //need to be already in the correct order // add 'title', 'yaxis' and htmlelem id as param inputs, only need this function
+  //var y0 = []; //JSON.parse(dataValues); //not the right datatype - string??? convert how?
+
+  let datas = [];
+
+  for (let i = 0; i < datalabels.length; i++) {
+    let trace = {
+      y: dataValues[i],
+      type: "box",
+      name: datalabels[i],
+      boxmean: true,
+      boxpoints: false,
+    };
+
+    datas.push(trace);
+  }
+
+  let layoutBox = {
+    title: title,
+    yaxis: {
+      title: "energy consumption intensity (kWh/ft2/yr)",
+    },
+    width: width,
+    height: height,
+    paper_bgcolor:'rgba(0,0,0,0)', 
+    plot_bgcolor:'rgba(0,0,0,0)'
+  };
+
+  // var myPlot = htmlelem,
+  //   data = datas,
+  //   layout = layoutBox;
+
+  Plotly.newPlot(htmlelem, datas, layoutBox); //return?
+
+  //how to get div element?
+  // let plotlyhtml = Plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
+
+  // myPlot.on("plotly_legendclick", function (data) {
+  //   console.log("plotyl event");
+  // });
+}
+
+function benchmarkGauge(initialavg, average, min, max, htmlelem) {
+
+  var data = [
+    {
+      domain: { x: [0, 1], y: [0, 1] },
+      value: average, //the actual value
+      title: { text: "Benchmark comparison" },
+      type: "indicator",
+      mode: "gauge+number+delta",
+      number: {suffix: " kWh/ft2/yr"}, //use html here to format this
+      delta: { reference: initialavg  }, //the initial value
+      gauge: { axis: { range: [min, max] } }
+    }
+  ];
+  
+  var layout = { width: 600, height: 400 };
+  Plotly.newPlot(htmlelem, data, layout);
+
+}
+
+function createEnergyPlots() { //energy sidebar
+  //function in overlay.js
+  //document.getElementById("energy-menu").appendChild(energygraph())
+  let energymenu = document.getElementById("energy-menu");
+
+  // const myDiv = document.createElement("div");
+  // myDiv.id = "myDiv";
+  // energymenu.appendChild(myDiv);
+
+  const benchmarkplot = document.createElement("div");
+  //benchmarkplot.className = "energy-plot";
+  benchmarkplot.id = "benchmark-plot";
+  benchmarkplot.className = "benchmark-plot";
+
+  energymenu.appendChild(benchmarkplot); //needs to be in separate div and not scroll?
+
+//call create the dropdown buttons here
+
+  // let dropdownDiv1 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
+  // energymenu.appendChild(dropdownDiv1);
+
+  // let dropdownDiv2 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
+  // energymenu.appendChild(dropdownDiv2);
+
+  // let dropdownDiv3 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
+  // energymenu.appendChild(dropdownDiv3);
+
+  // let selectTest = createDropdownMulti("example-getting-started", ["option1", "option2"]);
+  // energymenu.appendChild(selectTest);
+
+
+
+  const orientationplot = document.createElement("div");
+  orientationplot.className = "energy-plot";
+  orientationplot.id = "orientation-plot";
+
+  energymenu.appendChild(orientationplot);
+
+  const wwrplot = document.createElement("div");
+  wwrplot.className = "energy-plot";
+  wwrplot.id = "wwr-plot";
+
+  energymenu.appendChild(wwrplot);
+
+  const wallplot = document.createElement("div");
+  wallplot.className = "energy-plot";
+  wallplot.id = "wall-plot";
+
+  energymenu.appendChild(wallplot);
+
+  const roofplot = document.createElement("div");
+  //roofplot.className = ""
+  roofplot.id = "roof-plot";
+
+  energymenu.appendChild(roofplot);
+
+  const windowplot = document.createElement("div");
+  windowplot.id = "window-plot";
+
+  energymenu.appendChild(windowplot);
+
+  const infplot = document.createElement("div");
+  infplot.id = "inf-plot";
+
+  energymenu.appendChild(infplot);
+
+  const plugplot = document.createElement("div");
+  plugplot.id = "plug-plot";
+
+  energymenu.appendChild(plugplot);
+
+  const hvachplot = document.createElement("div");
+  hvachplot.id = "hvac-h-plot";
+
+  energymenu.appendChild(hvachplot);
+
+  const hvaccplot = document.createElement("div");
+  hvaccplot.id = "hvac-c-plot";
+
+  energymenu.appendChild(hvaccplot);
+
+  const pvplot = document.createElement("div");
+  pvplot.id = "pv-plot";
+
+  energymenu.appendChild(pvplot);
+}
+
+function updateGraph(htmlElemId, initialEnergyAvg) {
+    //function that takes in element id, and returns median, avg etc..
+  //create object to track the status of the legend
+  let roofKeys = Object.keys(document.getElementById(htmlElemId).data); //array of keys
+  let roofStatusArray = [];
+  
+
+  for (let key in roofKeys) //foreach./
+  {
+    roofStatusArray.push(true);
+  }
+
+  let roofLegendObj = convertToObj(roofKeys, roofStatusArray);
+  //console.log(roofLegendObj)
+
+  document.getElementById(htmlElemId).on("plotly_legendclick", function (data) { //how to deal with double click? - can disable while not working
+
+    //also need to remove BIM category (the last one)
+
+    //use map/object {index: active(on/off)}
+    //1.get the indexes of the data from .data
+    //on click, get the index = index from object - on/off invert //data.curveNumber = index (from obj), active = !active
+
+    for (let key in Object.keys(roofLegendObj)) {
+      if (data.curveNumber.toString() === key)
+      { 
+        roofLegendObj[key] = !roofLegendObj[key];
+        console.log(key, roofLegendObj[key]);
+      }
+    }
+
+    console.log(roofLegendObj);
+
+    let updatedPoints = [];
+
+    //update the data here incl median etc? - get the data from object where true, update median, min max etc
+    for (let key in Object.keys(roofLegendObj)){
+      if (roofLegendObj[key] === true)
+      {
+        //need a new array with all the points from these categories, and calculate the metrics for it
+
+        let updatedYPoints = document.getElementById(htmlElemId).data[key].y; //array
+
+        updatedPoints.push(updatedYPoints); //replot everything with this dataset - how is everything plotted?
+
+      }
+    }
+
+    let updatedPointsFlat = updatedPoints.flat();
+
+    //sort merge, min max etc
+
+
+    console.log("initial avg:" + initialEnergyAvg);
+    console.log("median: " + median(updatedPointsFlat));
+    console.log("average: " + avg$1(updatedPointsFlat));
+    console.log("min: " + Math.min.apply(Math, updatedPointsFlat));
+    console.log("max: " + Math.max.apply(Math, updatedPointsFlat));
+    console.log(document.getElementById(htmlElemId).id); //returns which graph has been changed
+
+
+    //update the gauge? - instead of initial avg should be previous avg
+    benchmarkGauge(initialEnergyAvg, avg$1(updatedPointsFlat) ,Math.min.apply(Math,updatedPointsFlat), Math.max.apply(Math, updatedPointsFlat), 'benchmark-plot'); //import initialenergyavg from bimviewer
+
+    
+    initialEnergyAvg = avg$1(updatedPointsFlat); //return this and call it in the function? recursive?
+    console.log("updated previous avg: " + initialEnergyAvg);
+
+   // return initialEnergyAvg //this needs to go across graphs - how?
+});
+}
+
+//https://stackoverflow.com/questions/45309447/calculating-median-javascript
+
+function median(numbers) {
+  const sorted = Array.from(numbers).sort((a, b) => a - b);
+  const middle = Math.floor(sorted.length / 2);
+
+  if (sorted.length % 2 === 0) {
+      return (sorted[middle - 1] + sorted[middle]) / 2;
+  }
+
+  return sorted[middle];
+}
+
+//https://techformist.com/average-median-javascript/
+function avg$1 (numbers) {
+
+  const arr = numbers.filter(val => !!val);
+  const sum = arr.reduce((sum, val) => (sum += val));
+  const len = numbers.length;
+
+  return sum/len;
+
+}
 
 // List of categories names
 const categories = {
@@ -113148,13 +113476,16 @@ const currentProjectID = url.searchParams.get("id"); //bimserver project id - us
 
 //console.log(currentProjectID);
 
-if (currentProjectID !== null)
-    {
-        console.log("getting latest revision", currentProjectID);
-        socket.emit("getLatestRevision", currentProjectID);
-    }
+//for energy assessment
+let initialEnergyAvg;
+
+if (currentProjectID !== null) {
+  console.log("getting latest revision", currentProjectID);
+  socket.emit("getLatestRevision", currentProjectID);
+}
 
 async function loadIfc(url) {
+
   // Load the model
   const model = await viewer.IFC.loadIfcUrl(url);
 
@@ -113168,13 +113499,127 @@ async function loadIfc(url) {
 
   await setupAllCategories(); //for ifc categories filter
   createTreeMenu(ifcProject);
+  await getIfcTotalAreas(model); //get GIFA, window, wall areas etc
+
+  //await getIfcReqs(model)
+
 }
+
+socketpy.on('connect', () => {
+  console.log('connected');
+  //socketpy.emit('sum', {numbers: [1,2]});
+});
+
+// socketpy.on('sum_result', (data) => {console.log(data)}
+// )
+// socketpy.on('test', (test) => { console.log(test)})
+
+socketpy.on('disconnect', () => {
+  console.log('disconnected');
+});
+
+//call graphs here (test)
+
+socketpy.on('df_benchmark', (labels, values) => {
+  
+  //console.log(labels, values)
+
+  //call the gauge here, then it need to be updated when values change
+  //boxplot_graph(labels, values, 'Benchmark energy usage', 'benchmark-plot', 600, 400)
+
+  //console.log(values.flat())
+  let values_flat = values.flat();
+
+  initialEnergyAvg = avg(values_flat);
+
+  //call the gauge with initial values here
+  benchmarkGauge(initialEnergyAvg, initialEnergyAvg, Math.min.apply(Math,values_flat), Math.max.apply(Math, values_flat), 'benchmark-plot');
+
+});
+
+socketpy.on('df_orientation', (labels, values) => {
+  
+  //console.log(labels, values)
+  //graph_event()
+  
+  boxplot_graph(labels, values, 'Orientation', 'orientation-plot', 600, 400);
+
+  updateGraph('orientation-plot',initialEnergyAvg);
+
+});
+
+socketpy.on('df_wwr', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'WWR', 'wwr-plot',600, 400);
+
+  updateGraph('wwr-plot', initialEnergyAvg);
+
+});
+
+socketpy.on('df_wall', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Wall construction', 'wall-plot',600, 400);
+  //updateGraph('wall-plot', initialEnergyAvg)
+
+});
+
+socketpy.on('df_roof', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Roof construction', 'roof-plot',600, 400);
+  //updateGraph('roof-plot', initialEnergyAvg)
+
+});
+
+
+socketpy.on('df_window', (labels, values) => {
+  
+ //console.log(labels, values)
+  boxplot_graph(labels, values, 'Window construction', 'window-plot',600, 400);
+
+ // updateGraph('window-plot', initialEnergyAvg)
+});
+
+socketpy.on('df_inf', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Infiltration', 'inf-plot',600, 400);
+});
+
+socketpy.on('df_plug', (labels, values) => {
+  //labels[0] = labels[0].substr(0,3) //need to check why % not workng
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Plug load', 'plug-plot',600, 400);
+});
+
+socketpy.on('df_hvac_h', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'HVAC heating type', 'hvac-h-plot',600, 400);
+});
+
+socketpy.on('df_hvac_c', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'HVAC cooling type', 'hvac-c-plot',600, 400);
+});
+
+socketpy.on('df_pv', (labels, values) => {
+  
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'PV size', 'pv-plot',600, 400);
+});
 
 //loads the model -
 socket.on("fileName", (fileName) => {
   let path = socketiourl + fileName;
   loadIfc(path);
   //console.log(path);
+
+
+  //do the calculations and export the data
 });
 
 //const resultJson = await viewer.IFC.properties.serializeAllProperties()
@@ -113208,26 +113653,68 @@ createCheckboxes();
 //help info
 createHelpInfo();
 
+createEnergyMenu();
+
+// $(document).ready(function() {
+//   $('#example-getting-started').multiselect();
+// });
+
 toolbarTop();
 toolbarBottom();
+
+createEnergyPlots(); 
+
 
 //select IFC elements
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
 
 window.ondblclick = async () => {
+  //access the three geometry object here and get qts
+
   const result = await viewer.IFC.selector.pickIfcItem(); //highlightIfcItem hides all other elements
   if (!result) return;
+
   const { modelID, id } = result;
+
   const props = await viewer.IFC.getProperties(modelID, id, true, false);
   //console.log(props);
-  //console.log(props.psets);
+
+  //GET ELEMENT QUANTITIES -
+
+  //walls
+  // const propsw = await viewer.IFC.getProperties(modelID, props.psets[props.psets.length -1].expressID, true, false); //getting the last property set (ifcelementquantities) - slabs
+  // console.log(propsw)
+
+  // const props2 = await viewer.IFC.getProperties(
+  //   modelID,
+  //   //props.psets[props.psets.length - 1].expressID, //getting the last property set (ifcelementquantities) - slabs, windows (ifcwindow) & doors
+  //   props.psets[0].expressID, //the first property set for IfcWallStandardCase
+  //   true,
+  //   false
+  // ); 
+  // console.log(props2);
+
+  // //let qts = await viewer.IFC.getProperties(modelID, props2.HasProperties[0].value, true, false)
+
+  // let qts = props2.Quantities; // does not work for all objects (works for slabs + windows)
+  // console.log(qts)
+
+  // //this needs to be fixed, otherwise breaking the code
+  // for (let qty of qts) {
+  //   let value = await viewer.IFC.getProperties(modelID, qty.value, true, false);
+  //   console.log(value);
+
+  //   if (value.AreaValue) {
+  //     //this works (not for all objects)
+  //     console.log("Area: " + value.AreaValue.value);
+  //   }
+  // }
 
   createPropertiesMenu(props);
 
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
 
-  //works, needs more testing?
   if (clippingPlanesActive) {
     viewer.clipper.createPlane();
   }
@@ -113294,9 +113781,6 @@ annotationsButton.onclick = () => {
     viewer.dimensions.previewActive = false;
   }
 };
-
-//help button
-//const helpButton = document.getElementById("help-button");
 
 //IFC tree view
 const toggler = document.getElementsByClassName("caret");
@@ -113478,4 +113962,188 @@ function removeAllChildren(element) {
   while (element.firstChild) {
     element.removeChild(element.firstChild);
   }
+}
+
+
+async function getIfcTotalAreas (model) {
+  //Calculate GIFA - checking if slabs are Floors, checking isExternal = False (Pset_SlabCommon), calcultae based on gross area
+  //
+  //
+  const slabs = await viewer.IFC.getAllItemsOfType(
+    model.modelID,
+    IFCSLAB,
+    true
+  ); //get all the properties here/qto
+  //console.log(slabs);
+
+  let totalSlabArea = 0;
+
+  for (let slab of slabs) {
+    //getitemproperties of the expressid
+    let slabProps = await viewer.IFC.getProperties(
+      model.modelID,
+      slab.expressID,
+      true,
+      false
+    ); //getting the last property set (ifcelementquantities) - slabs
+    //console.log(slabProps);
+
+    if (slabProps.PredefinedType.value === "FLOOR") {
+
+      //check if isExternal false
+      let Pset_SlabCommonid = slabProps.psets[slabProps.psets.length -2].expressID;
+      let Pset_SlabCommonProps = await viewer.IFC.getProperties(model.modelID, Pset_SlabCommonid, true, false);
+
+      //get the IfcPropertySingleValue - should be a loop instead?
+      let isExternal = await viewer.IFC.getProperties(model.modelID, Pset_SlabCommonProps.HasProperties[0].value, true, false); //does not get the isExternal necessarily...
+      let isExternalValue = isExternal.NominalValue.value;
+      let isExternalName = isExternal.Name.value; //need to check this as well...
+
+      //console.log("isExternal: " +isExternalName + isExternalValue);   
+
+      if (isExternalValue === "F" && isExternalName === "IsExternal") { //if isExternal = FALSE 
+        let qts = slabProps.psets[slabProps.psets.length - 1].Quantities; //gets the last property set, which is a quantityset
+         //console.log(qts) //base quantities for slabs
+  
+        for (let qty of qts) {
+          let value = await viewer.IFC.getProperties(
+            model.modelID,
+            qty.value,
+            true,
+            false
+          );
+           //console.log(value)
+            
+          if (value.Name.value === "GrossArea") { //should be net area?
+          //if (value.AreaValue) { //this works to see if there is an area value
+            //this works (not for all objects)
+            //  console.log("Area: " + value.AreaValue.value)
+            totalSlabArea += value.AreaValue.value;
+            //need to subtract if Pset_SlabCommon isExternal = true and divide /2
+          }
+        }
+      }
+      }
+
+  }
+  console.log("Total GIFA: " + totalSlabArea);
+
+  //get extenral walls
+  const walls = await viewer.IFC.getAllItemsOfType(
+    model.modelID,
+    IFCWALLSTANDARDCASE,
+    true
+  ); //get all the properties here/qto
+  //console.log(slabs);
+
+  let totalWallArea = 0;
+
+  for (let wall of walls) {
+
+    //getitemproperties of the expressid
+    let wallProps = await viewer.IFC.getProperties(
+      model.modelID,
+      wall.expressID,
+      true,
+      false
+    ); //getting the last property set (ifcelementquantities) - windows
+
+    //check if is exterior wall
+    let Pset_WallCommonid = wallProps.psets[wallProps.psets.length -1].expressID;
+    let Pset_WallCommonProps = await viewer.IFC.getProperties(model.modelID, Pset_WallCommonid, true, false);
+
+    //console.log(Pset_WallCommonProps)
+
+    //get the IfcPropertySingleValue - should be a loop instead?
+    let isExternal = await viewer.IFC.getProperties(model.modelID, Pset_WallCommonProps.HasProperties[0].value, true, false); //does not get the isExternal necessarily...
+    let isExternalValue = isExternal.NominalValue.value;
+    let isExternalName = isExternal.Name.value; //need to check this as well...
+
+    //console.log("isExternal: " +isExternalName + isExternalValue);   
+
+   if (isExternalValue === "T" && isExternalName === "IsExternal") { //if isExternal = FALSE 
+
+
+    if (wallProps.psets[0].Quantities) {
+      //get the IfcPropertySingleValue
+        let wallQts = wallProps.psets[0].Quantities; 
+         //console.log(wallQts) //base quantities for windows
+  
+        for (let qty of wallQts) {
+          let value = await viewer.IFC.getProperties(
+            model.modelID,
+            qty.value,
+            true,
+            false
+          );
+           //console.log(value)
+
+           if (value.Name.value === "NetSideArea") {
+            //this works (not for all objects)
+            //  console.log("Area: " + value.AreaValue.value)
+            totalWallArea += value.AreaValue.value;
+          }
+        }
+      }
+
+     }
+    }
+
+  console.log("Total Wall area: " + totalWallArea);
+  //get windows - IFCWINDOW and Curtain Wall Plates
+
+  const ifcWindows = await viewer.IFC.getAllItemsOfType(
+    model.modelID,
+    IFCWINDOW,
+    true
+  ); //get all the properties here/qto
+  //console.log(slabs);
+
+  let totalWindowArea = 0;
+
+  for (let window of ifcWindows) {
+    //getitemproperties of the expressid
+    let windowProps = await viewer.IFC.getProperties(
+      model.modelID,
+      window.expressID,
+      true,
+      false
+    ); //getting the last property set (ifcelementquantities) - windows
+
+      //get the IfcPropertySingleValue
+        let windowQts = windowProps.psets[windowProps.psets.length - 1].Quantities;
+         //console.log(windowQts) //base quantities for windows
+  
+        for (let qty of windowQts) {
+          let value = await viewer.IFC.getProperties(
+            model.modelID,
+            qty.value,
+            true,
+            false
+          );
+           //console.log(value)
+
+          if (value.AreaValue) { //this works to see if there is an area value
+            //this works (not for all objects)
+            //  console.log("Area: " + value.AreaValue.value)
+            totalWindowArea += value.AreaValue.value;
+          }
+        }
+      }
+  console.log("Total IFC Window area: " + totalWindowArea);
+
+//return the areas
+      socketpy.emit('ifcAreas', {windowArea :  totalWindowArea, wallArea : totalWallArea, slabArea: totalSlabArea} );
+
+}
+
+//https://techformist.com/average-median-javascript/
+function avg (numbers) {
+
+  const arr = numbers.filter(val => !!val);
+  const sum = arr.reduce((sum, val) => (sum += val));
+  const len = numbers.length;
+
+  return sum/len;
+
 }

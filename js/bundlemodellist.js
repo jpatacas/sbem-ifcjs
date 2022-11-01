@@ -1,15 +1,3 @@
-//export { default as BimServerApiPromise } from './bimserverapipromise.js';
-//export { default as BimServerApiWebSocket } from './bimserverapiwebsocket.js';
-//export { default as Model } from './model.js';
-
-//import {XMLHttpRequest from 'xhr2';
-
-// Where does this come frome? The API crashes on the absence of this
-// member function?
-String.prototype.firstUpper = function () {
-	return this.charAt(0).toUpperCase() + this.slice(1);
-};
-
 //UI functions
 
 function uploadCard() {
@@ -96,6 +84,10 @@ function buildMap(keys, values) {
 
 const socketiourl = "http://localhost:8088/";
 
+const socketpyurl = "http://localhost:8000/";
+
+const socketpy = io(socketpyurl);
+
 const socket = io(socketiourl);
 
 // export const projects = [
@@ -129,6 +121,19 @@ const socket = io(socketiourl);
 
 //get list of projects from bimserver, create a card for each project
 
+socketpy.on('connect', () => {
+  console.log('connected');
+  socketpy.emit('sum', {numbers: [1,2]});
+});
+
+// socketpy.on('sum_result', (data) => {console.log(data)}
+// )
+// socketpy.on('test', (test) => { console.log(test)})
+
+socketpy.on('disconnect', () => {
+  console.log('disconnected');
+});
+
 socket.on("hello", (arg) => {
   console.log(arg);
 });
@@ -153,8 +158,7 @@ const input = document.getElementById("file-input");
 input.addEventListener(
   "change", //create project, upload file to project/bimserver
   async (changed) => {
-    //look for filw with above name, upload that file URL (hack only works for local folder)
-    //this (input stream? to DataHandler, pass DataHandler)
+
     let ifcURLlocal = input.value;
 
     let modelName = ifcURLlocal.substr(12); //get just the modelname
@@ -167,25 +171,13 @@ input.addEventListener(
 
     console.log("model name: " + modelNameNoExt);
     console.log("ifc url path: " + ifcURL);
-    //checkinIFC(ifcURL, modelName); //do this serverside, return the project id and go to that url
 
-    //socket.emit("createProject", "testproject" + Math.random())
+    socket.emit("uploadModel", modelNameNoExt, ifcURL); 
 
-    socket.emit("uploadModel", modelNameNoExt, ifcURL);
-
-    //await uploadModel(modelNameNoExt, ifcURL);
-
-    //howto use async await here??
     socket.on("newProjectData", (fileName, poid) => {
       console.log("new filename: " + fileName, "new project id: " + poid);
       window.location.href = "./bimviewer.html" + `?id=${poid}`;
 
-      //issues with existing/repeat project names??
     });
   }
 );
-
-// async function uploadModel (modelName, URL) 
-// {
-//   socket.emit("uploadModel", modelName, URL);
-// }
