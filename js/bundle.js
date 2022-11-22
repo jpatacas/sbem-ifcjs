@@ -112722,7 +112722,7 @@ function toolbarBottom() {
   toolbar.className = "toolbar";
 
   toolbar.appendChild(treeButton());
-  toolbar.appendChild(filterButton());
+  toolbar.appendChild(filterButton$1());
   toolbar.appendChild(clipPlaneButton());
   toolbar.appendChild(annotationsButton$1());
   toolbar.appendChild(propertiesButton$1());
@@ -112826,7 +112826,7 @@ function homeButton() {
   return homeButton;
 }
 
-function filterButton() {
+function filterButton$1() {
   const filterButton = document.createElement("button");
   filterButton.className = "button";
 
@@ -113190,8 +113190,6 @@ const socket = io(socketiourl);
 //   },
 // ];
 
-//import { initialEnergyAvg } from "./bimviewer.js";
-
 function boxplot_graph(
   datalabels,
   dataValues,
@@ -113220,7 +113218,7 @@ function boxplot_graph(
   let layoutBox = {
     title: title,
     yaxis: {
-      title: "energy consumption intensity (kWh/ft2/yr)",
+      title: "energy consumption intensity (kWh/m2/yr)",
     },
     width: width,
     height: height,
@@ -113228,18 +113226,9 @@ function boxplot_graph(
     plot_bgcolor:'rgba(0,0,0,0)'
   };
 
-  // var myPlot = htmlelem,
-  //   data = datas,
-  //   layout = layoutBox;
-
   Plotly.newPlot(htmlelem, datas, layoutBox); //return?
 
-  //how to get div element?
-  // let plotlyhtml = Plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
 
-  // myPlot.on("plotly_legendclick", function (data) {
-  //   console.log("plotyl event");
-  // });
 }
 
 function benchmarkGauge(initialavg, average, min, max, htmlelem) {
@@ -113248,51 +113237,174 @@ function benchmarkGauge(initialavg, average, min, max, htmlelem) {
     {
       domain: { x: [0, 1], y: [0, 1] },
       value: average, //the actual value
-      title: { text: "Benchmark comparison" },
+      title: { text: "Benchmark comparison<br><span style='font-size:0.8em;color:gray'>kWh/m2/yr</span>" },
       type: "indicator",
       mode: "gauge+number+delta",
-      number: {suffix: " kWh/ft2/yr"}, //use html here to format this
+    //  number: {suffix: "<br><span style='font-size:3em;color:gray'>kWh/ft2/yr</span>"}, //use html here to format this
       delta: { reference: initialavg  }, //the initial value
       gauge: { axis: { range: [min, max] } }
     }
   ];
   
-  var layout = { width: 600, height: 400 };
+  var layout = { width: 600, height: 200 , margin: { t: 80, b: 25, l: 25, r: 25 }};
   Plotly.newPlot(htmlelem, data, layout);
 
 }
 
-function createEnergyPlots() { //energy sidebar
-  //function in overlay.js
-  //document.getElementById("energy-menu").appendChild(energygraph())
+
+function createDropdownMulti (htmlElemId, optionValues) {
+
+  const select = document.createElement("select");
+  select.id = htmlElemId;
+  select.setAttribute("multiple", "multiple");
+ // select.multiple = "multiple";
+  select.size = "20"; //workaround - this should be changed, or change how to access the selected data in the dropdown
+
+  for (let optionValue of optionValues) {
+    const option = document.createElement("option");
+    option.value = optionValue;
+    option.innerText = optionValue;
+    select.appendChild(option);
+  }
+
+  return select
+}
+
+//createdropdown button
+function createDropdownButton (column, htmlElemId, placeholder, vanillaElement) {
+
+  //let energymenuheader = document.getElementById("energy-menu-header")
+  //let toolbarFilter = document.getElementById("simple-card-container-energy-filter");
+  //let toolbarFilter = document.getElementById("toolbar-filter-id");
+  let toolbarFilter = document.getElementById("toolbar-dropdown-div");
+
+  let selectDropdownMulti =  createDropdownMulti(htmlElemId, column ) ; //these params need to be input from python server
+  //energymenuheader.appendChild(selectDropdownMulti);
+  toolbarFilter.appendChild(selectDropdownMulti);
+
+  let selectCarsMulti = new vanillaSelectBox(
+    vanillaElement,
+        {
+      "placeHolder": placeholder,
+      
+    // "maxSelect":3,
+    // "translations": { "all": "All", "items": "Cars" } //not sure what this is for 
+        });
+
+  return selectCarsMulti
+}
+
+
+
+function createEnergyMenuHeader() {
+
   let energymenu = document.getElementById("energy-menu");
 
-  // const myDiv = document.createElement("div");
-  // myDiv.id = "myDiv";
-  // energymenu.appendChild(myDiv);
+  const energymenuheader = document.createElement("div");
+  energymenuheader.id = "energy-menu-header";
+  energymenuheader.className = "energy-menu-header";
+
+  energymenu.appendChild(energymenuheader);
+}
+
+function createToolbarFilter() {
+  const cardContainer = document.createElement("div");
+  cardContainer.className = "simple-card-container";
+  cardContainer.id = "simple-card-container-energy-filter";
+
+  let energymenuheader = document.getElementById("energy-menu-header");
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "toolbar";
+  toolbar.id = "toolbar-filter-id";
+
+  const toolbarDropdownDiv = document.createElement("div");
+  toolbarDropdownDiv.className = "toolbar";
+  toolbarDropdownDiv.id = "toolbar-dropdown-div";
+
+  const toolbarButtonsDiv = document.createElement("div");
+  toolbarButtonsDiv.className = "toolbar";
+  toolbarButtonsDiv.id = "toolbar-buttons-div";
+
+  //add 6 non-breaking spaces between the filter dropdowns and buttons
+  let nbspace = document.createTextNode("\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0");
+
+  toolbar.appendChild(toolbarDropdownDiv);
+  toolbar.appendChild(nbspace);
+  toolbar.appendChild(toolbarButtonsDiv);
+
+  cardContainer.appendChild(toolbar);
+
+  energymenuheader.appendChild(cardContainer);
+}
+
+function createBenchmarkPlot() {
+
+  let energymenuheader = document.getElementById("energy-menu-header");
 
   const benchmarkplot = document.createElement("div");
   //benchmarkplot.className = "energy-plot";
   benchmarkplot.id = "benchmark-plot";
   benchmarkplot.className = "benchmark-plot";
 
-  energymenu.appendChild(benchmarkplot); //needs to be in separate div and not scroll?
+  energymenuheader.appendChild(benchmarkplot);
+}
 
-//call create the dropdown buttons here
+function createFilterButton() {
 
-  // let dropdownDiv1 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv1);
+  let toolbarFilter = document.getElementById("toolbar-buttons-div");
 
-  // let dropdownDiv2 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv2);
+    let buttonFilter = document.createElement("button");
+    buttonFilter.className = "button";
+    buttonFilter.id = "filter-button";
+    
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("width", "15");
+    svgEl.setAttribute("height", "15");
+    svgEl.setAttribute("viewBox", "0 0 24 24");
 
-  // let dropdownDiv3 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv3);
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path1.setAttribute(
+      "d",
+      "M19.479 2l-7.479 12.543v5.924l-1-.6v-5.324l-7.479-12.543h15.958zm3.521-2h-23l9 15.094v5.906l5 3v-8.906l9-15.094z"
+    );
 
-  // let selectTest = createDropdownMulti("example-getting-started", ["option1", "option2"]);
-  // energymenu.appendChild(selectTest);
+    svgEl.appendChild(path1);
+    buttonFilter.appendChild(svgEl);
 
+    toolbarFilter.appendChild(buttonFilter);
+}
 
+function createResetButton() {
+
+  let toolbarFilter = document.getElementById("toolbar-buttons-div");
+
+  let resetButton = document.createElement("button");
+  resetButton.className = "button";
+  resetButton.id = "reset-button";
+  
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+  path1.setAttribute(
+    "d",
+    "m3.508 6.726c1.765-2.836 4.911-4.726 8.495-4.726 5.518 0 9.997 4.48 9.997 9.997 0 5.519-4.479 9.999-9.997 9.999-5.245 0-9.553-4.048-9.966-9.188-.024-.302.189-.811.749-.811.391 0 .715.3.747.69.351 4.369 4.012 7.809 8.47 7.809 4.69 0 8.497-3.808 8.497-8.499 0-4.689-3.807-8.497-8.497-8.497-3.037 0-5.704 1.597-7.206 3.995l1.991.005c.414 0 .75.336.75.75s-.336.75-.75.75h-4.033c-.414 0-.75-.336-.75-.75v-4.049c0-.414.336-.75.75-.75s.75.335.75.75z"
+  );
+
+  svgEl.appendChild(path1);
+  resetButton.appendChild(svgEl);
+
+  toolbarFilter.appendChild(resetButton);
+
+}
+
+function createEnergyPlots() { //energy sidebar
+
+  let energymenu = document.getElementById("energy-menu");
 
   const orientationplot = document.createElement("div");
   orientationplot.className = "energy-plot";
@@ -113364,7 +113476,9 @@ function updateGraph(htmlElemId, initialEnergyAvg) {
   let roofLegendObj = convertToObj(roofKeys, roofStatusArray);
   //console.log(roofLegendObj)
 
-  document.getElementById(htmlElemId).on("plotly_legendclick", function (data) { //how to deal with double click? - can disable while not working
+  document.getElementById(htmlElemId).on("plotly_legenddoubleclick", function (data) {return false}); //disable double click on legend
+
+  document.getElementById(htmlElemId).on("plotly_legendclick", function (data) { 
 
     //also need to remove BIM category (the last one)
 
@@ -113479,6 +113593,12 @@ const currentProjectID = url.searchParams.get("id"); //bimserver project id - us
 //for energy assessment
 let initialEnergyAvg;
 
+let ifcAreas;
+
+let occupancyDropdownButton;
+let usageDropdownButton;
+let vintageDropdownButton;
+
 if (currentProjectID !== null) {
   console.log("getting latest revision", currentProjectID);
   socket.emit("getLatestRevision", currentProjectID);
@@ -113507,12 +113627,7 @@ async function loadIfc(url) {
 
 socketpy.on('connect', () => {
   console.log('connected');
-  //socketpy.emit('sum', {numbers: [1,2]});
 });
-
-// socketpy.on('sum_result', (data) => {console.log(data)}
-// )
-// socketpy.on('test', (test) => { console.log(test)})
 
 socketpy.on('disconnect', () => {
   console.log('disconnected');
@@ -113522,25 +113637,19 @@ socketpy.on('disconnect', () => {
 
 socketpy.on('df_benchmark', (labels, values) => {
   
-  //console.log(labels, values)
-
-  //call the gauge here, then it need to be updated when values change
-  //boxplot_graph(labels, values, 'Benchmark energy usage', 'benchmark-plot', 600, 400)
-
-  //console.log(values.flat())
   let values_flat = values.flat();
 
   initialEnergyAvg = avg(values_flat);
 
-  //call the gauge with initial values here
+  //call the benchmark gauge with initial values here
   benchmarkGauge(initialEnergyAvg, initialEnergyAvg, Math.min.apply(Math,values_flat), Math.max.apply(Math, values_flat), 'benchmark-plot');
+
 
 });
 
 socketpy.on('df_orientation', (labels, values) => {
   
   //console.log(labels, values)
-  //graph_event()
   
   boxplot_graph(labels, values, 'Orientation', 'orientation-plot', 600, 400);
 
@@ -113561,7 +113670,7 @@ socketpy.on('df_wall', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Wall construction', 'wall-plot',600, 400);
-  //updateGraph('wall-plot', initialEnergyAvg)
+  updateGraph('wall-plot', initialEnergyAvg);
 
 });
 
@@ -113569,47 +113678,83 @@ socketpy.on('df_roof', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Roof construction', 'roof-plot',600, 400);
-  //updateGraph('roof-plot', initialEnergyAvg)
+  updateGraph('roof-plot', initialEnergyAvg);
 
 });
-
 
 socketpy.on('df_window', (labels, values) => {
   
  //console.log(labels, values)
   boxplot_graph(labels, values, 'Window construction', 'window-plot',600, 400);
 
- // updateGraph('window-plot', initialEnergyAvg)
+  updateGraph('window-plot', initialEnergyAvg);
 });
 
 socketpy.on('df_inf', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Infiltration', 'inf-plot',600, 400);
-});
 
-socketpy.on('df_plug', (labels, values) => {
-  //labels[0] = labels[0].substr(0,3) //need to check why % not workng
-  //console.log(labels, values)
-  boxplot_graph(labels, values, 'Plug load', 'plug-plot',600, 400);
+  updateGraph('inf-plot', initialEnergyAvg);
 });
 
 socketpy.on('df_hvac_h', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'HVAC heating type', 'hvac-h-plot',600, 400);
+
+  updateGraph('hvac-h-plot', initialEnergyAvg);
+
 });
 
 socketpy.on('df_hvac_c', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'HVAC cooling type', 'hvac-c-plot',600, 400);
+
+  updateGraph('hvac-c-plot', initialEnergyAvg);
+
+});
+
+socketpy.on('df_plug', (labels, values) => {
+  //labels[0] = labels[0].substr(0,3) //need to check why % not workng
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Plug load', 'plug-plot',600, 400);
+
+  updateGraph('plug-plot', initialEnergyAvg);
+
 });
 
 socketpy.on('df_pv', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'PV size', 'pv-plot',600, 400);
+
+  updateGraph('pv-plot', initialEnergyAvg);
+});
+
+socketpy.on('occupancy_values', (occupancy_values) => { 
+  //console.log(occupancy_values)
+
+  if (!document.getElementById("occupancy"))
+  {
+    occupancyDropdownButton = createDropdownButton(occupancy_values, "occupancy", "Occupancy", "#occupancy");
+  //createDropdownButtonOccupancy(occupancy_values)
+  }
+});
+
+socketpy.on('usage_values', (usage_values) => {
+  if (!document.getElementById("usage"))
+  {
+    usageDropdownButton = createDropdownButton(usage_values, "usage", "Usage", "#usage");
+  }
+});
+
+socketpy.on('vintage_values', (vintage_values) => {
+  if (!document.getElementById("vintage"))
+  {
+    vintageDropdownButton = createDropdownButton(vintage_values, "vintage", "Vintage", "#vintage");
+  }
 });
 
 //loads the model -
@@ -113640,6 +113785,8 @@ const scene = viewer.context.getScene(); //for showing/hiding categories
 
 // loadIfc(path);
 
+
+
 //UI elements
 
 createIfcPropertyMenu();
@@ -113653,17 +113800,79 @@ createCheckboxes();
 //help info
 createHelpInfo();
 
-createEnergyMenu();
-
-// $(document).ready(function() {
-//   $('#example-getting-started').multiselect();
-// });
-
 toolbarTop();
 toolbarBottom();
 
-createEnergyPlots(); 
+//energy menu stuff
 
+createEnergyMenu();
+
+createEnergyMenuHeader();
+createBenchmarkPlot();
+
+createToolbarFilter();
+
+createFilterButton();
+createResetButton();
+
+
+createEnergyPlots(); 
+//createDropdownButtons();
+
+let filterButton = document.getElementById("filter-button");
+
+filterButton.onclick = () => { 
+ 
+    filterButtonAll();
+
+            //needs to be in separate function and called after updateFilter event resolves;
+  //need to get min and max values: ...data[0].gauge.axis.range[0] / ...data[0].gauge.axis.range[1]
+
+  // let updatedEnergyAvg = document.getElementById('benchmark-plot').data[0].value //get the energy average from benchmark plot
+
+  // console.log("initial energy avg: " + initialEnergyAvg + " updated energy avg: " + updatedEnergyAvg)
+  
+};
+
+let resetButton = document.getElementById("reset-button");
+
+resetButton.onclick = () => {
+
+  socketpy.emit('ifcAreas', ifcAreas);
+  //clear the selections
+  occupancyDropdownButton.empty();
+  usageDropdownButton.empty();
+  vintageDropdownButton.empty();
+
+};
+
+function filterButtonAll(initialEnergyAvg) { //input the energy avg?
+  //1. get the selected data
+  let occupancy = document.getElementsByClassName ('title')[1].outerText;
+  let occupancyStrArray = occupancy.split(',');
+
+  let usage = document.getElementsByClassName ('title')[2].outerText;
+  let usageStrArray = usage.split(',');
+
+  let vintage = document.getElementsByClassName ('title')[3].outerText;
+  let vintageStrArray = vintage.split(',');
+
+  console.log("Occupancy: " + occupancyStrArray[0] + " Usage: " + usageStrArray[0] + " Vintage: " + vintageStrArray[0]);
+
+  console.log(ifcAreas); //pass this to the emit
+
+  //2. send selected data back to python server, query and update the dataset - occupancyStrArray, usageStrArray, vintageStrArray
+  socketpy.emit('updateFilter', [ifcAreas, {occupancy :  occupancyStrArray, usage : usageStrArray, vintage: vintageStrArray}]);
+
+
+  //update the gauge here? 
+//update the gauge? - instead of initial avg should be previous avg
+  //benchmarkGauge(initialEnergyAvg, updatedEnergyAvg ,Math.min.apply(Math,updatedEnergyAvg), Math.max.apply(Math, updatedEnergyAvg), 'benchmark-plot'); //import initialenergyavg from bimviewer
+
+
+}
+
+//energy menu stuff end
 
 //select IFC elements
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
@@ -113965,7 +114174,7 @@ function removeAllChildren(element) {
 }
 
 
-async function getIfcTotalAreas (model) {
+async function getIfcTotalAreas (model) { //this should return the areas for a given model and they need to be acccesible
   //Calculate GIFA - checking if slabs are Floors, checking isExternal = False (Pset_SlabCommon), calcultae based on gross area
   //
   //
@@ -114134,6 +114343,8 @@ async function getIfcTotalAreas (model) {
 
 //return the areas
       socketpy.emit('ifcAreas', {windowArea :  totalWindowArea, wallArea : totalWallArea, slabArea: totalSlabArea} );
+
+      ifcAreas = {windowArea :  totalWindowArea, wallArea : totalWallArea, slabArea: totalSlabArea};
 
 }
 

@@ -8,7 +8,6 @@ import {
   toolbarTop,
   createHelpInfo,
   createEnergyMenu,
-  convertToObj,
   
 } from "./overlay.js";
 
@@ -29,10 +28,9 @@ import {
   IFCROOF,
   IFCBUILDINGELEMENTPROXY,
   IFCBUILDING,
-  IfcDiscreteAccessoryTypeEnum,
   
 } from "web-ifc";
-import { boxplot_graph, createEnergyPlots, updateGraph, benchmarkGauge } from "./energy.js";
+import { boxplot_graph, createEnergyPlots, updateGraph, benchmarkGauge, createDropdownButton, createBenchmarkPlot, createFilterButton, createEnergyMenuHeader, createResetButton, createToolbarFilter } from "./energy.js";
 
 // List of categories names
 const categories = {
@@ -68,6 +66,12 @@ const currentProjectID = url.searchParams.get("id"); //bimserver project id - us
 //for energy assessment
 let initialEnergyAvg;
 
+let ifcAreas;
+
+let occupancyDropdownButton;
+let usageDropdownButton;
+let vintageDropdownButton;
+
 if (currentProjectID !== null) {
   console.log("getting latest revision", currentProjectID);
   socket.emit("getLatestRevision", currentProjectID);
@@ -96,12 +100,7 @@ async function loadIfc(url) {
 
 socketpy.on('connect', () => {
   console.log('connected');
-  //socketpy.emit('sum', {numbers: [1,2]});
 })
-
-// socketpy.on('sum_result', (data) => {console.log(data)}
-// )
-// socketpy.on('test', (test) => { console.log(test)})
 
 socketpy.on('disconnect', () => {
   console.log('disconnected');
@@ -111,25 +110,19 @@ socketpy.on('disconnect', () => {
 
 socketpy.on('df_benchmark', (labels, values) => {
   
-  //console.log(labels, values)
-
-  //call the gauge here, then it need to be updated when values change
-  //boxplot_graph(labels, values, 'Benchmark energy usage', 'benchmark-plot', 600, 400)
-
-  //console.log(values.flat())
   let values_flat = values.flat();
 
   initialEnergyAvg = avg(values_flat);
 
-  //call the gauge with initial values here
+  //call the benchmark gauge with initial values here
   benchmarkGauge(initialEnergyAvg, initialEnergyAvg, Math.min.apply(Math,values_flat), Math.max.apply(Math, values_flat), 'benchmark-plot');
+
 
 })
 
 socketpy.on('df_orientation', (labels, values) => {
   
   //console.log(labels, values)
-  //graph_event()
   
   boxplot_graph(labels, values, 'Orientation', 'orientation-plot', 600, 400);
 
@@ -150,7 +143,7 @@ socketpy.on('df_wall', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Wall construction', 'wall-plot',600, 400)
-  //updateGraph('wall-plot', initialEnergyAvg)
+  updateGraph('wall-plot', initialEnergyAvg)
 
 })
 
@@ -158,47 +151,83 @@ socketpy.on('df_roof', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Roof construction', 'roof-plot',600, 400)
-  //updateGraph('roof-plot', initialEnergyAvg)
+  updateGraph('roof-plot', initialEnergyAvg)
 
 })
-
 
 socketpy.on('df_window', (labels, values) => {
   
  //console.log(labels, values)
   boxplot_graph(labels, values, 'Window construction', 'window-plot',600, 400)
 
- // updateGraph('window-plot', initialEnergyAvg)
+  updateGraph('window-plot', initialEnergyAvg)
 })
 
 socketpy.on('df_inf', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'Infiltration', 'inf-plot',600, 400)
-})
 
-socketpy.on('df_plug', (labels, values) => {
-  //labels[0] = labels[0].substr(0,3) //need to check why % not workng
-  //console.log(labels, values)
-  boxplot_graph(labels, values, 'Plug load', 'plug-plot',600, 400)
+  updateGraph('inf-plot', initialEnergyAvg)
 })
 
 socketpy.on('df_hvac_h', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'HVAC heating type', 'hvac-h-plot',600, 400)
+
+  updateGraph('hvac-h-plot', initialEnergyAvg)
+
 })
 
 socketpy.on('df_hvac_c', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'HVAC cooling type', 'hvac-c-plot',600, 400)
+
+  updateGraph('hvac-c-plot', initialEnergyAvg)
+
+})
+
+socketpy.on('df_plug', (labels, values) => {
+  //labels[0] = labels[0].substr(0,3) //need to check why % not workng
+  //console.log(labels, values)
+  boxplot_graph(labels, values, 'Plug load', 'plug-plot',600, 400)
+
+  updateGraph('plug-plot', initialEnergyAvg)
+
 })
 
 socketpy.on('df_pv', (labels, values) => {
   
   //console.log(labels, values)
   boxplot_graph(labels, values, 'PV size', 'pv-plot',600, 400)
+
+  updateGraph('pv-plot', initialEnergyAvg)
+})
+
+socketpy.on('occupancy_values', (occupancy_values) => { 
+  //console.log(occupancy_values)
+
+  if (!document.getElementById("occupancy"))
+  {
+    occupancyDropdownButton = createDropdownButton(occupancy_values, "occupancy", "Occupancy", "#occupancy")
+  //createDropdownButtonOccupancy(occupancy_values)
+  }
+})
+
+socketpy.on('usage_values', (usage_values) => {
+  if (!document.getElementById("usage"))
+  {
+    usageDropdownButton = createDropdownButton(usage_values, "usage", "Usage", "#usage")
+  }
+})
+
+socketpy.on('vintage_values', (vintage_values) => {
+  if (!document.getElementById("vintage"))
+  {
+    vintageDropdownButton = createDropdownButton(vintage_values, "vintage", "Vintage", "#vintage")
+  }
 })
 
 //loads the model -
@@ -229,6 +258,8 @@ const scene = viewer.context.getScene(); //for showing/hiding categories
 
 // loadIfc(path);
 
+
+
 //UI elements
 
 createIfcPropertyMenu();
@@ -242,17 +273,79 @@ createCheckboxes();
 //help info
 createHelpInfo();
 
-createEnergyMenu();
-
-// $(document).ready(function() {
-//   $('#example-getting-started').multiselect();
-// });
-
 toolbarTop();
 toolbarBottom();
 
-createEnergyPlots(); 
+//energy menu stuff
 
+createEnergyMenu();
+
+createEnergyMenuHeader();
+createBenchmarkPlot();
+
+createToolbarFilter();
+
+createFilterButton();
+createResetButton();
+
+
+createEnergyPlots(); 
+//createDropdownButtons();
+
+let filterButton = document.getElementById("filter-button");
+
+filterButton.onclick = () => { 
+ 
+    filterButtonAll(initialEnergyAvg)
+
+            //needs to be in separate function and called after updateFilter event resolves;
+  //need to get min and max values: ...data[0].gauge.axis.range[0] / ...data[0].gauge.axis.range[1]
+
+  // let updatedEnergyAvg = document.getElementById('benchmark-plot').data[0].value //get the energy average from benchmark plot
+
+  // console.log("initial energy avg: " + initialEnergyAvg + " updated energy avg: " + updatedEnergyAvg)
+  
+}
+
+let resetButton = document.getElementById("reset-button");
+
+resetButton.onclick = () => {
+
+  socketpy.emit('ifcAreas', ifcAreas);
+  //clear the selections
+  occupancyDropdownButton.empty()
+  usageDropdownButton.empty()
+  vintageDropdownButton.empty()
+
+}
+
+function filterButtonAll(initialEnergyAvg) { //input the energy avg?
+  //1. get the selected data
+  let occupancy = document.getElementsByClassName ('title')[1].outerText
+  let occupancyStrArray = occupancy.split(',');
+
+  let usage = document.getElementsByClassName ('title')[2].outerText
+  let usageStrArray = usage.split(',');
+
+  let vintage = document.getElementsByClassName ('title')[3].outerText
+  let vintageStrArray = vintage.split(',');
+
+  console.log("Occupancy: " + occupancyStrArray[0] + " Usage: " + usageStrArray[0] + " Vintage: " + vintageStrArray[0]);
+
+  console.log(ifcAreas) //pass this to the emit
+
+  //2. send selected data back to python server, query and update the dataset - occupancyStrArray, usageStrArray, vintageStrArray
+  socketpy.emit('updateFilter', [ifcAreas, {occupancy :  occupancyStrArray, usage : usageStrArray, vintage: vintageStrArray}])
+
+
+  //update the gauge here? 
+//update the gauge? - instead of initial avg should be previous avg
+  //benchmarkGauge(initialEnergyAvg, updatedEnergyAvg ,Math.min.apply(Math,updatedEnergyAvg), Math.max.apply(Math, updatedEnergyAvg), 'benchmark-plot'); //import initialenergyavg from bimviewer
+
+
+}
+
+//energy menu stuff end
 
 //select IFC elements
 window.onmousemove = () => viewer.IFC.selector.prePickIfcItem();
@@ -620,7 +713,7 @@ async function getIfcReqs (model) {
 }
 
 
-async function getIfcTotalAreas (model) {
+async function getIfcTotalAreas (model) { //this should return the areas for a given model and they need to be acccesible
   //Calculate GIFA - checking if slabs are Floors, checking isExternal = False (Pset_SlabCommon), calcultae based on gross area
   //
   //
@@ -789,6 +882,8 @@ async function getIfcTotalAreas (model) {
 
 //return the areas
       socketpy.emit('ifcAreas', {windowArea :  totalWindowArea, wallArea : totalWallArea, slabArea: totalSlabArea} )
+
+      ifcAreas = {windowArea :  totalWindowArea, wallArea : totalWallArea, slabArea: totalSlabArea}
 
 }
 

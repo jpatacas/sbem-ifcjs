@@ -1,30 +1,4 @@
-//import { initialEnergyAvg } from "./bimviewer.js";
 import { convertToObj } from "./overlay.js";
-
-
-export function energygraph(dataLabels, dataValues) {
-  // var x = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-  // var y = [28.8, 28.5, 37, 56.8, 69.7, 79.7, 78.5, 77.8, 74.1, 62.6, 45.3, 39.9];
-  let data = [
-    {
-      x: dataLabels,
-      y: dataValues,
-      type: "scatter",
-    },
-  ];
-
-  var layout = {
-    //   xaxis: {
-    //     tickmode: "array", // If "array", the placement of the ticks is set via `tickvals` and the tick text is `ticktext`.
-    //     tickvals: dataValues,
-    //     ticktext: dataLabels
-    //   }
-  };
-
-  //document.appendChild(energyplot)
-
-  return Plotly.newPlot("energy-plot", data, layout); // DOM node or string id of a DOM node
-}
 
 export function boxplot_graph(
   datalabels,
@@ -54,7 +28,7 @@ export function boxplot_graph(
   let layoutBox = {
     title: title,
     yaxis: {
-      title: "energy consumption intensity (kWh/ft2/yr)",
+      title: "energy consumption intensity (kWh/m2/yr)",
     },
     width: width,
     height: height,
@@ -62,18 +36,9 @@ export function boxplot_graph(
     plot_bgcolor:'rgba(0,0,0,0)'
   };
 
-  // var myPlot = htmlelem,
-  //   data = datas,
-  //   layout = layoutBox;
-
   Plotly.newPlot(htmlelem, datas, layoutBox); //return?
 
-  //how to get div element?
-  // let plotlyhtml = Plotly.offline.plot(data, include_plotlyjs=False, output_type='div')
 
-  // myPlot.on("plotly_legendclick", function (data) {
-  //   console.log("plotyl event");
-  // });
 }
 
 export function benchmarkGauge(initialavg, average, min, max, htmlelem) {
@@ -82,52 +47,28 @@ export function benchmarkGauge(initialavg, average, min, max, htmlelem) {
     {
       domain: { x: [0, 1], y: [0, 1] },
       value: average, //the actual value
-      title: { text: "Benchmark comparison" },
+      title: { text: "Benchmark comparison<br><span style='font-size:0.8em;color:gray'>kWh/m2/yr</span>" },
       type: "indicator",
       mode: "gauge+number+delta",
-      number: {suffix: " kWh/ft2/yr"}, //use html here to format this
+    //  number: {suffix: "<br><span style='font-size:3em;color:gray'>kWh/ft2/yr</span>"}, //use html here to format this
       delta: { reference: initialavg  }, //the initial value
       gauge: { axis: { range: [min, max] } }
     }
   ];
   
-  var layout = { width: 600, height: 400 };
+  var layout = { width: 600, height: 200 , margin: { t: 80, b: 25, l: 25, r: 25 }};
   Plotly.newPlot(htmlelem, data, layout);
 
 }
 
-//replace  / delete this function
-function createDropdownButton(labelInput, labelText, optionValues) { //onclick button, need to send event back to server to query again, and get the data back... (where to do this?)
-
-  const label = document.createElement("label");
-  label.for = labelInput;
-  label.innerText = labelText;
-
-  const select = document.createElement("select");
-  select.name = labelInput;
-  select.id = labelInput;
-
-  for (let optionValue of optionValues) {
-    const option = document.createElement("option");
-    option.value = optionValue;
-    option.innerText = optionValue;
-    select.appendChild(option);
-  }
-
-  let dropdownDiv = document.createElement("div");
-
-  dropdownDiv.appendChild(label);
-  dropdownDiv.appendChild(select);
-
-  return dropdownDiv
-
-}
 
 function createDropdownMulti (htmlElemId, optionValues) {
 
   const select = document.createElement("select");
   select.id = htmlElemId;
-  select.multiple = "multiple";
+  select.setAttribute("multiple", "multiple");
+ // select.multiple = "multiple";
+  select.size = "20"; //workaround - this should be changed, or change how to access the selected data in the dropdown
 
   for (let optionValue of optionValues) {
     const option = document.createElement("option");
@@ -139,37 +80,141 @@ function createDropdownMulti (htmlElemId, optionValues) {
   return select
 }
 
-export function createEnergyPlots() { //energy sidebar
-  //function in overlay.js
-  //document.getElementById("energy-menu").appendChild(energygraph())
+//createdropdown button
+export function createDropdownButton (column, htmlElemId, placeholder, vanillaElement) {
+
+  //let energymenuheader = document.getElementById("energy-menu-header")
+  //let toolbarFilter = document.getElementById("simple-card-container-energy-filter");
+  //let toolbarFilter = document.getElementById("toolbar-filter-id");
+  let toolbarFilter = document.getElementById("toolbar-dropdown-div");
+
+  let selectDropdownMulti =  createDropdownMulti(htmlElemId, column ) ; //these params need to be input from python server
+  //energymenuheader.appendChild(selectDropdownMulti);
+  toolbarFilter.appendChild(selectDropdownMulti);
+
+  let selectCarsMulti = new vanillaSelectBox(
+    vanillaElement,
+        {
+      "placeHolder": placeholder,
+      
+    // "maxSelect":3,
+    // "translations": { "all": "All", "items": "Cars" } //not sure what this is for 
+        });
+
+  return selectCarsMulti
+}
+
+
+
+export function createEnergyMenuHeader() {
+
   let energymenu = document.getElementById("energy-menu");
 
-  // const myDiv = document.createElement("div");
-  // myDiv.id = "myDiv";
-  // energymenu.appendChild(myDiv);
+  const energymenuheader = document.createElement("div");
+  energymenuheader.id = "energy-menu-header";
+  energymenuheader.className = "energy-menu-header";
+
+  energymenu.appendChild(energymenuheader);
+}
+
+export function createToolbarFilter() {
+  const cardContainer = document.createElement("div");
+  cardContainer.className = "simple-card-container";
+  cardContainer.id = "simple-card-container-energy-filter";
+
+  let energymenuheader = document.getElementById("energy-menu-header");
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "toolbar";
+  toolbar.id = "toolbar-filter-id";
+
+  const toolbarDropdownDiv = document.createElement("div");
+  toolbarDropdownDiv.className = "toolbar";
+  toolbarDropdownDiv.id = "toolbar-dropdown-div";
+
+  const toolbarButtonsDiv = document.createElement("div");
+  toolbarButtonsDiv.className = "toolbar";
+  toolbarButtonsDiv.id = "toolbar-buttons-div";
+
+  //add 6 non-breaking spaces between the filter dropdowns and buttons
+  let nbspace = document.createTextNode("\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0");
+
+  toolbar.appendChild(toolbarDropdownDiv);
+  toolbar.appendChild(nbspace);
+  toolbar.appendChild(toolbarButtonsDiv);
+
+  cardContainer.appendChild(toolbar);
+
+  energymenuheader.appendChild(cardContainer);
+}
+
+export function createBenchmarkPlot() {
+
+  let energymenuheader = document.getElementById("energy-menu-header");
 
   const benchmarkplot = document.createElement("div");
   //benchmarkplot.className = "energy-plot";
   benchmarkplot.id = "benchmark-plot";
   benchmarkplot.className = "benchmark-plot";
 
-  energymenu.appendChild(benchmarkplot); //needs to be in separate div and not scroll?
+  energymenuheader.appendChild(benchmarkplot);
+}
 
-//call create the dropdown buttons here
+export function createFilterButton() {
 
-  // let dropdownDiv1 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv1);
+  let toolbarFilter = document.getElementById("toolbar-buttons-div");
 
-  // let dropdownDiv2 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv2);
+    let buttonFilter = document.createElement("button");
+    buttonFilter.className = "button";
+    buttonFilter.id = "filter-button";
+    
+    const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svgEl.setAttribute("width", "15");
+    svgEl.setAttribute("height", "15");
+    svgEl.setAttribute("viewBox", "0 0 24 24");
 
-  // let dropdownDiv3 = createDropdownButton("labelInput", "labelText", ["option 1", "option2"])
-  // energymenu.appendChild(dropdownDiv3);
+    const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path1.setAttribute(
+      "d",
+      "M19.479 2l-7.479 12.543v5.924l-1-.6v-5.324l-7.479-12.543h15.958zm3.521-2h-23l9 15.094v5.906l5 3v-8.906l9-15.094z"
+    );
 
-  // let selectTest = createDropdownMulti("example-getting-started", ["option1", "option2"]);
-  // energymenu.appendChild(selectTest);
+    svgEl.appendChild(path1);
+    buttonFilter.appendChild(svgEl);
 
+    toolbarFilter.appendChild(buttonFilter);
+}
 
+export function createResetButton() {
+
+  let toolbarFilter = document.getElementById("toolbar-buttons-div");
+
+  let resetButton = document.createElement("button");
+  resetButton.className = "button";
+  resetButton.id = "reset-button";
+  
+  const svgEl = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgEl.setAttribute("width", "15");
+  svgEl.setAttribute("height", "15");
+  svgEl.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+
+  path1.setAttribute(
+    "d",
+    "m3.508 6.726c1.765-2.836 4.911-4.726 8.495-4.726 5.518 0 9.997 4.48 9.997 9.997 0 5.519-4.479 9.999-9.997 9.999-5.245 0-9.553-4.048-9.966-9.188-.024-.302.189-.811.749-.811.391 0 .715.3.747.69.351 4.369 4.012 7.809 8.47 7.809 4.69 0 8.497-3.808 8.497-8.499 0-4.689-3.807-8.497-8.497-8.497-3.037 0-5.704 1.597-7.206 3.995l1.991.005c.414 0 .75.336.75.75s-.336.75-.75.75h-4.033c-.414 0-.75-.336-.75-.75v-4.049c0-.414.336-.75.75-.75s.75.335.75.75z"
+  );
+
+  svgEl.appendChild(path1);
+  resetButton.appendChild(svgEl);
+
+  toolbarFilter.appendChild(resetButton);
+
+}
+
+export function createEnergyPlots() { //energy sidebar
+
+  let energymenu = document.getElementById("energy-menu");
 
   const orientationplot = document.createElement("div");
   orientationplot.className = "energy-plot";
@@ -241,7 +286,9 @@ export function updateGraph(htmlElemId, initialEnergyAvg) {
   let roofLegendObj = convertToObj(roofKeys, roofStatusArray);
   //console.log(roofLegendObj)
 
-  document.getElementById(htmlElemId).on("plotly_legendclick", function (data) { //how to deal with double click? - can disable while not working
+  document.getElementById(htmlElemId).on("plotly_legenddoubleclick", function (data) {return false}) //disable double click on legend
+
+  document.getElementById(htmlElemId).on("plotly_legendclick", function (data) { 
 
     //also need to remove BIM category (the last one)
 

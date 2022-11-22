@@ -61,6 +61,10 @@ a {
     left: 2rem;
 }
 
+.right {
+    right: 2rem;
+}
+
 .helpdoc-position {
     top: 70%;
     left: 65%;
@@ -421,4 +425,18 @@ ul, #myUL {
   
   font-size: 25px;
   z-index: 1;
+}
+
+.energy-menu-header {
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    background-color: rgb(255, 255, 255);
+  
+    font-size: 25px;
+    z-index: 1;
+}
+
+#simple-card-container-energy-filter {
+    position: relative;
 }
