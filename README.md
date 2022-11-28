@@ -1,6 +1,6 @@
 # final
 
-Simplified building energy modelling tool using IFC.js and the NREL ResStock dataset.
+Simplified building energy modelling tool using IFC.js and the NREL ResStock dataset (https://resstock.nrel.gov/).
 
 It takes IFC quantities as an input for initial filtering and allows you to evaluate different design options and their impact on energy usage.
 
