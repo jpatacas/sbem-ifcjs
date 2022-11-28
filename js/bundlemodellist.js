@@ -1,37 +1,35 @@
 //UI functions
 
 function uploadCard() {
+  const uploadCard = document.createElement("input");
+  uploadCard.type = "file";
+  uploadCard.id = "file-input";
+  uploadCard.className = "button";
 
-      //upload - no svg? - how to remove choose file box?
-      const uploadCard = document.createElement('input');
-      uploadCard.type = 'file';
-      uploadCard.id = 'file-input';
-      uploadCard.className = 'button';
-  
-      const card = document.createElement("div");
-      card.className = "card";
-    
-      const svgElement = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
-      svgElement.setAttribute("width", "24");
-      svgElement.setAttribute("height", "24");
-      svgElement.setAttribute("viewBox", "0 0 24 24");
-    
-      const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path1.setAttribute(
-        "d",
-        "m11 11h-7.25c-.414 0-.75.336-.75.75s.336.75.75.75h7.25v7.25c0 .414.336.75.75.75s.75-.336.75-.75v-7.25h7.25c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-7.25v-7.25c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-      );
-    
-      svgElement.appendChild(path1);
-      card.appendChild(svgElement);
-    
-      card.appendChild(uploadCard);
-    
-      const projectContainer = document.getElementById("projects-container");
-      projectContainer.appendChild(card);
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const svgElement = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg"
+  );
+  svgElement.setAttribute("width", "24");
+  svgElement.setAttribute("height", "24");
+  svgElement.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "m11 11h-7.25c-.414 0-.75.336-.75.75s.336.75.75.75h7.25v7.25c0 .414.336.75.75.75s.75-.336.75-.75v-7.25h7.25c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-7.25v-7.25c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+  );
+
+  svgElement.appendChild(path1);
+  card.appendChild(svgElement);
+
+  card.appendChild(uploadCard);
+
+  const projectContainer = document.getElementById("projects-container");
+  projectContainer.appendChild(card);
 }
 
 function createCardDiv(projectName, projectId) {
@@ -63,7 +61,6 @@ function createCardDiv(projectName, projectId) {
   const button = document.createElement("a");
   button.className = "button";
   button.href = "./bimviewer.html" + `?id=${projectId}`;
-  //button.href= projectId; //also needs to be an input
   button.textContent = "Model";
 
   card.appendChild(button);
@@ -82,60 +79,25 @@ function buildMap(keys, values) {
   return map;
 }
 
+//for connection with bimserver
 const socketiourl = "http://localhost:8088/";
 
+const socket = io(socketiourl);
+
+//for connection with python app (energy assessment)
 const socketpyurl = "http://localhost:8000/";
 
 const socketpy = io(socketpyurl);
 
-const socket = io(socketiourl);
-
-// export const projects = [
-//   {
-//     name: "Duplex-A-MEP",
-//     id: "3145729",
-//   },
-//   {
-//     name: "TESTED_Simple_project_01",
-//     id: "2883585",
-//   },
-//   {
-//     name: "TESTED_Simple_project_02",
-//     id: "2949121",
-//   },
-//   {
-//     name: "rac_advanced_sample_project",
-//     id: "3080193",
-//   },
-//   {
-//     name: "rac_basic_sample_project",
-//     id: "3014657",
-//   },
-// ];
-
-// for (let proj of projects)
-// {
-//     createCardDiv(proj.name, proj.id);
-//    // console.log(proj.name, proj.id);
-// }
-
 //get list of projects from bimserver, create a card for each project
 
-socketpy.on('connect', () => {
-  console.log('connected');
-  socketpy.emit('sum', {numbers: [1,2]});
+socketpy.on("connect", () => {
+  console.log("connected");
+  socketpy.emit("sum", { numbers: [1, 2] });
 });
 
-// socketpy.on('sum_result', (data) => {console.log(data)}
-// )
-// socketpy.on('test', (test) => { console.log(test)})
-
-socketpy.on('disconnect', () => {
-  console.log('disconnected');
-});
-
-socket.on("hello", (arg) => {
-  console.log(arg);
+socketpy.on("disconnect", () => {
+  console.log("disconnected");
 });
 
 uploadCard();
@@ -147,10 +109,8 @@ socket.on("projectIds", (resname, reslist) => {
 
   projectsMap.forEach(function (value, key) {
     createCardDiv(key, value);
+    console.log("key: " + key + " value: " + value);
   });
-
-  //console.log(resname + reslist)
-  //console.log("projectIds")
 });
 
 const input = document.getElementById("file-input");
@@ -158,26 +118,20 @@ const input = document.getElementById("file-input");
 input.addEventListener(
   "change", //create project, upload file to project/bimserver
   async (changed) => {
-
     let ifcURLlocal = input.value;
 
     let modelName = ifcURLlocal.substr(12); //get just the modelname
 
-    let path = "http://localhost:5500/models/";
+    let path = "http://localhost:5500/models/"; //e.g. using VS code live server
 
     let ifcURL = path + modelName;
 
     let modelNameNoExt = modelName.substr(0, modelName.length - 4);
 
-    console.log("model name: " + modelNameNoExt);
-    console.log("ifc url path: " + ifcURL);
-
-    socket.emit("uploadModel", modelNameNoExt, ifcURL); 
+    socket.emit("uploadModel", modelNameNoExt, ifcURL);
 
     socket.on("newProjectData", (fileName, poid) => {
-      console.log("new filename: " + fileName, "new project id: " + poid);
       window.location.href = "./bimviewer.html" + `?id=${poid}`;
-
     });
   }
 );

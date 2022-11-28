@@ -1,7 +1,5 @@
 //UI functions
 
-
-//needs to be fixed, it is over other html elements - change in css
 export function modelName(modelName) {
   const modelNameContainer = document.createElement("div");
   modelNameContainer.className = "simple-card-container top";
@@ -16,39 +14,36 @@ export function modelName(modelName) {
 }
 
 export function uploadCard() {
+  const uploadCard = document.createElement("input");
+  uploadCard.type = "file";
+  uploadCard.id = "file-input";
+  uploadCard.className = "button";
 
-      //upload - no svg? - how to remove choose file box?
-      const uploadCard = document.createElement('input');
-      uploadCard.type = 'file';
-      uploadCard.id = 'file-input';
-      uploadCard.className = 'button';
-  
-      const card = document.createElement("div");
-      card.className = "card";
-    
-      const svgElement = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "svg"
-      );
-      svgElement.setAttribute("width", "24");
-      svgElement.setAttribute("height", "24");
-      svgElement.setAttribute("viewBox", "0 0 24 24");
-    
-      const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      path1.setAttribute(
-        "d",
-        "m11 11h-7.25c-.414 0-.75.336-.75.75s.336.75.75.75h7.25v7.25c0 .414.336.75.75.75s.75-.336.75-.75v-7.25h7.25c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-7.25v-7.25c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
-      );
-    
-      svgElement.appendChild(path1);
-      card.appendChild(svgElement);
-    
-      card.appendChild(uploadCard);
-    
-      const projectContainer = document.getElementById("projects-container");
-      projectContainer.appendChild(card);
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const svgElement = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "svg"
+  );
+  svgElement.setAttribute("width", "24");
+  svgElement.setAttribute("height", "24");
+  svgElement.setAttribute("viewBox", "0 0 24 24");
+
+  const path1 = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path1.setAttribute(
+    "d",
+    "m11 11h-7.25c-.414 0-.75.336-.75.75s.336.75.75.75h7.25v7.25c0 .414.336.75.75.75s.75-.336.75-.75v-7.25h7.25c.414 0 .75-.336.75-.75s-.336-.75-.75-.75h-7.25v-7.25c0-.414-.336-.75-.75-.75s-.75.336-.75.75z"
+  );
+
+  svgElement.appendChild(path1);
+  card.appendChild(svgElement);
+
+  card.appendChild(uploadCard);
+
+  const projectContainer = document.getElementById("projects-container");
+  projectContainer.appendChild(card);
 }
-
 
 export function toolbarTop() {
   const cardContainer = document.createElement("div");
@@ -111,7 +106,6 @@ function checkbox(category, text) {
 }
 
 export function createCheckboxes() {
-  // need to improve this and check if categories are ok
   const checkboxes = document.createElement("div");
   checkboxes.className = "checkboxes";
   checkboxes.id = "checkboxes";
@@ -183,7 +177,6 @@ export function createCardDiv(projectName, projectId) {
   const button = document.createElement("a");
   button.className = "button";
   button.href = "./bimviewer.html" + `?id=${projectId}`;
-  //button.href= projectId; //also needs to be an input
   button.textContent = "Model";
 
   card.appendChild(button);
@@ -314,9 +307,7 @@ function energyButton() {
   energyButton.addEventListener(
     "click",
     function () {
-      if ( //here change to energy menu
-        document.getElementById("energy-menu").style.display === "initial"
-      ) {
+      if (document.getElementById("energy-menu").style.display === "initial") {
         document.getElementById("energy-menu").style.display = "none";
         energyButton.classList.remove("active");
       } else if (
@@ -435,7 +426,7 @@ function helpButton() {
   path1.setAttribute(
     "d",
     "M14.601 21.5c0 1.38-1.116 2.5-2.499 2.5-1.378 0-2.499-1.12-2.499-2.5s1.121-2.5 2.499-2.5c1.383 0 2.499 1.119 2.499 2.5zm-2.42-21.5c-4.029 0-7.06 2.693-7.06 8h3.955c0-2.304.906-4.189 3.024-4.189 1.247 0 2.57.828 2.684 2.411.123 1.666-.767 2.511-1.892 3.582-2.924 2.78-2.816 4.049-2.816 7.196h3.943c0-1.452-.157-2.508 1.838-4.659 1.331-1.436 2.986-3.222 3.021-5.943.047-3.963-2.751-6.398-6.697-6.398z"
-  ); //change path
+  );
 
   svgEl.appendChild(path1);
   helpButton.appendChild(svgEl);
@@ -457,14 +448,10 @@ function helpButton() {
 }
 
 export function createEnergyMenu() {
-
   const energyMenuDiv = document.createElement("div");
   energyMenuDiv.className = "energy-menu";
   energyMenuDiv.id = "energy-menu";
   energyMenuDiv.style.display = "none";
-
-  
-
 
   document.body.appendChild(energyMenuDiv);
 }
@@ -543,18 +530,3 @@ export function buildMap(keys, values) {
   }
   return map;
 }
-
-//https://www.geeksforgeeks.org/how-to-create-an-object-from-two-arrays-in-javascript/
-// Checking if the array lengths are same
-// and none of the array is empty
-export function convertToObj(a, b){
-  if(a.length != b.length || a.length == 0 || b.length == 0){
-   return null;
-  }
-  let obj = {};
-   
-// Using the foreach method
-  a.forEach((k, i) => {obj[k] = b[i]})
-  return obj;
-}
-

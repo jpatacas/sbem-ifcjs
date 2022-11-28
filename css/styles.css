@@ -322,20 +322,6 @@ a {
 
 }
 
-.energy-menu {
-    position: absolute;
-    overflow-y: scroll;
-    /* background-color: white; */
-    height: 100vh;
-    right: 0;
-    background: var(--translucent-white);
-    backdrop-filter: var(--blur-filter);
-    border: none;
-    /* border-radius: 45px; */
-    z-index: 1;
-
-}
-
 li ul {
     user-select: none;
     cursor: pointer;
@@ -406,7 +392,7 @@ ul, #myUL {
     border-radius: 4px;
 }
 
-  .helpdoc {
+.helpdoc {
     position: fixed;
     width: 30%;
     height: 35%;
@@ -415,6 +401,20 @@ ul, #myUL {
     justify-content: center;
     align-items: center;
     background-color: transparent;
+}
+
+.energy-menu {
+    position: absolute;
+    overflow-y: scroll;
+    /* background-color: white; */
+    height: 100vh;
+    right: 0;
+    background: var(--translucent-white);
+    backdrop-filter: var(--blur-filter);
+    border: none;
+    /* border-radius: 45px; */
+    z-index: 1;
+
 }
 
 .benchmark-plot {
