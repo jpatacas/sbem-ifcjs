@@ -5,7 +5,6 @@ import { socket, socketpy } from "./projects.js";
 
 socketpy.on("connect", () => {
   console.log("connected");
-  socketpy.emit("sum", { numbers: [1, 2] });
 });
 
 socketpy.on("disconnect", () => {
