@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # SBEM + IFC.js
 
 Simplified building energy modelling tool using IFC.js and the NREL ResStock dataset (https://resstock.nrel.gov/).
@@ -11,3 +12,7 @@ Add .ifc models to the /models folder and edit the projects.js file to add model
 The following tool should be running to use the energy modelling panel: https://github.com/jpatacas/energy-queries-sbem
 
 To use this tool with Bimserver check the enable-bimserver branch.
+=======
+# final
+An IFC viewer using IFC.js WIV
+>>>>>>> main
