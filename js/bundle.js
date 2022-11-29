@@ -113137,15 +113137,34 @@ function createHelpInfo() {
   document.body.appendChild(helpDocDiv);
 }
 
-//for connection with bimserver
-const socketiourl = "http://localhost:8088/";
-
-const socket = io(socketiourl);
-
-//for connection with python app (energy assessment)
+//for socket.io connection with python app (energy assessment)
 const socketpyurl = "http://localhost:8000/";
 
 const socketpy = io(socketpyurl);
+
+//e.g. model names for models placed in /models folder
+let projects = [
+  {
+    name: "Duplex-A-MEP",
+    id: "3145729",
+  },
+  {
+    name: "TESTED_Simple_project_01",
+    id: "2883585",
+  },
+  {
+    name: "TESTED_Simple_project_02",
+    id: "2949121",
+  },
+  {
+    name: "rac_advanced_sample_project",
+    id: "3080193",
+  },
+  {
+    name: "rac_basic_sample_project",
+    id: "3014657",
+  },
+];
 
 //functions and UI elements for the energy assessment menu
 
@@ -113537,8 +113556,6 @@ const currentUrl = window.location.href;
 const url = new URL(currentUrl);
 const currentProjectID = url.searchParams.get("id"); //bimserver project id - use this to get latest revision etc
 
-//console.log(currentProjectID);
-
 //for energy assessment
 let initialEnergyAvg;
 let ifcAreas;
@@ -113548,12 +113565,16 @@ let vintageDropdownButton;
 
 if (currentProjectID !== null) {
   console.log("getting latest revision", currentProjectID);
-  socket.emit("getLatestRevision", currentProjectID);
+
 }
 
 async function loadIfc(url) {
   // Load the model
   const model = await viewer.IFC.loadIfcUrl(url);
+
+  console.log("URL:" + url);
+
+  console.log(projects);
 
   // Add dropped shadow and post-processing efect
   await viewer.shadowDropper.renderShadow(model.modelID);
@@ -113684,12 +113705,16 @@ socketpy.on("vintage_values", (vintage_values) => {
   }
 });
 
-//loads the model -
-socket.on("fileName", (fileName) => {
-  let path = socketiourl + fileName;
-  loadIfc(path);
-  //console.log(path);
-});
+let path;
+
+for (let proj of projects) {
+  if (proj.id === currentProjectID) {
+    let fileName = proj.name;
+    path = "../models/" + fileName + ".ifc"; // folder with ifc models
+  }
+}
+
+loadIfc(path);
 
 const scene = viewer.context.getScene(); //for showing/hiding categories
 
@@ -113948,7 +113973,6 @@ function createSimpleChild(parent, node) {
     let idsArray = [node.expressID];
 
     const props = await viewer.IFC.getProperties(0, idsArray[0], true, false);
-    //console.log(props); //call the function here
     createPropertiesMenu(props);
     document.getElementById("ifc-property-menu").style.display = "initial";
     propertiesButton.classList.add("active");
@@ -113957,7 +113981,6 @@ function createSimpleChild(parent, node) {
 
 //IFC properties menu functions
 function createPropertiesMenu(properties) {
-
   removeAllChildren(propsGUI);
 
   delete properties.psets;
@@ -114130,7 +114153,7 @@ async function getIfcTotalAreas(model) {
     }
   }
 
-  console.log("Total Wall area: " + totalWallArea);
+  //console.log("Total Wall area: " + totalWallArea);
 
   //get windows
   const ifcWindows = await viewer.IFC.getAllItemsOfType(

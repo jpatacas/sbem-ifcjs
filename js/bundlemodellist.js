@@ -69,69 +69,38 @@ function createCardDiv(projectName, projectId) {
   projectContainer.appendChild(card);
 }
 
-//only used for the bimserver version
-// https://www.tutorialspoint.com/building-a-map-from-2-arrays-of-values-and-keys-in-javascript
-function buildMap(keys, values) {
-  const map = new Map();
-  for (let i = 0; i < keys.length; i++) {
-    map.set(keys[i], values[i]);
-  }
-  return map;
-}
-
-//for connection with bimserver
-const socketiourl = "http://localhost:8088/";
-
-const socket = io(socketiourl);
-
-//for connection with python app (energy assessment)
+//for socket.io connection with python app (energy assessment)
 const socketpyurl = "http://localhost:8000/";
 
-const socketpy = io(socketpyurl);
+io(socketpyurl);
 
-//get list of projects from bimserver, create a card for each project
-
-socketpy.on("connect", () => {
-  console.log("connected");
-  socketpy.emit("sum", { numbers: [1, 2] });
-});
-
-socketpy.on("disconnect", () => {
-  console.log("disconnected");
-});
+//e.g. model names for models placed in /models folder
+let projects = [
+  {
+    name: "Duplex-A-MEP",
+    id: "3145729",
+  },
+  {
+    name: "TESTED_Simple_project_01",
+    id: "2883585",
+  },
+  {
+    name: "TESTED_Simple_project_02",
+    id: "2949121",
+  },
+  {
+    name: "rac_advanced_sample_project",
+    id: "3080193",
+  },
+  {
+    name: "rac_basic_sample_project",
+    id: "3014657",
+  },
+];
 
 uploadCard();
 
-socket.emit("getProjects", "getProjects"); //get projects from a bimserver
-
-socket.on("projectIds", (resname, reslist) => {
-  let projectsMap = buildMap(resname, reslist);
-
-  projectsMap.forEach(function (value, key) {
-    createCardDiv(key, value);
-    console.log("key: " + key + " value: " + value);
-  });
-});
-
-const input = document.getElementById("file-input");
-
-input.addEventListener(
-  "change", //create project, upload file to project/bimserver
-  async (changed) => {
-    let ifcURLlocal = input.value;
-
-    let modelName = ifcURLlocal.substr(12); //get just the modelname
-
-    let path = "http://localhost:5500/models/"; //e.g. using VS code live server
-
-    let ifcURL = path + modelName;
-
-    let modelNameNoExt = modelName.substr(0, modelName.length - 4);
-
-    socket.emit("uploadModel", modelNameNoExt, ifcURL);
-
-    socket.on("newProjectData", (fileName, poid) => {
-      window.location.href = "./bimviewer.html" + `?id=${poid}`;
-    });
-  }
-);
+for (let proj of projects)
+{
+    createCardDiv(proj.name, proj.id);
+}
