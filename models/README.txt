@@ -1,0 +1,1 @@
+add .ifc models to this folder and edit the projects.js file to add model names.
