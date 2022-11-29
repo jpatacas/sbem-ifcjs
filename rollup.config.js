@@ -1,11 +1,11 @@
 import resolve from '@rollup/plugin-node-resolve';
 
 export default [{
-  input: 'bimviewer.js',
+  input: 'js/bimviewer.js',
   output: [
     {
       format: 'esm',
-      file: 'bundle.js'
+      file: 'js/bundle.js'
     },
   ],
   plugins: [
@@ -13,11 +13,11 @@ export default [{
   ]
 }, 
 {
-  input: 'index.js',
+  input: 'js/index.js',
   output: [
     {
       format: 'esm',
-      file: 'bundlemodellist.js'
+      file: 'js/bundlemodellist.js'
     },
   ],
   plugins: [
