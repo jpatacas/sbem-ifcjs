@@ -1,4 +1,4 @@
-# final
+# SBEM + IFC.js
 
 Simplified building energy modelling tool using IFC.js and the NREL ResStock dataset (https://resstock.nrel.gov/).
 
