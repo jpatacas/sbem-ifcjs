@@ -1,6 +1,5 @@
 //UI functions
 
-//needs to be fixed, it is over other html elements!
 export function modelName(modelName) {
   const modelNameContainer = document.createElement("div");
   modelNameContainer.className = "simple-card-container top";
@@ -74,7 +73,6 @@ function checkbox(category, text) {
 }
 
 export function createCheckboxes() {
-  // need to improve this and check if categories are ok
   const checkboxes = document.createElement("div");
   checkboxes.className = "checkboxes";
   checkboxes.id = "checkboxes";
@@ -441,14 +439,4 @@ export function createHelpInfo() {
 
   helpDocDiv.appendChild(helpDocImg);
   document.body.appendChild(helpDocDiv);
-}
-
-//only used for the bimserver version
-// https://www.tutorialspoint.com/building-a-map-from-2-arrays-of-values-and-keys-in-javascript
-export function buildMap(keys, values) {
-  const map = new Map();
-  for (let i = 0; i < keys.length; i++) {
-    map.set(keys[i], values[i]);
-  }
-  return map;
 }

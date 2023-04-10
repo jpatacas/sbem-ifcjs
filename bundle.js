@@ -112758,7 +112758,6 @@ function checkbox(category, text) {
 }
 
 function createCheckboxes() {
-  // need to improve this and check if categories are ok
   const checkboxes = document.createElement("div");
   checkboxes.className = "checkboxes";
   checkboxes.id = "checkboxes";
@@ -113140,16 +113139,6 @@ viewer.grid.setGrid();
 const currentUrl = window.location.href;
 const url = new URL(currentUrl);
 const currentProjectID = url.searchParams.get("id"); //bimserver project id - use this to get latest revision etc
-//console.log(currentProjectID);
-
-//const socket = io(socketiourl);
-
-//otherwise socket app will crash
-// if (currentProjectID !== null)
-//     {
-//         console.log("getting latest revision", currentProjectID);
-//         socket.emit("getLatestRevision", currentProjectID);
-//     }
 
 async function loadIfc(url) {
   // Load the model
@@ -113167,22 +113156,12 @@ async function loadIfc(url) {
   createTreeMenu(ifcProject);
 }
 
-//loads the model -
-// socket.on("fileName", (fileName) => {
-//   let path = socketiourl + fileName; //change here too or make it global variable
-//   loadIfc(path);
-//   //console.log(path);
-// });
-
-//const resultJson = await viewer.IFC.properties.serializeAllProperties()
-
 const scene = viewer.context.getScene(); //for showing/hiding categories
 
 let path;
 
 for (let proj of projects) {
-  //createCardDiv(proj.name, proj.id);
-  //console.log(proj.name, proj.id);
+
   if (proj.id === currentProjectID) {
     let fileName = proj.name;
     path = "./models/" + fileName + ".ifc"; // get path into this
@@ -113199,16 +113178,8 @@ createIfcPropertyMenu();
 const propsGUI = document.getElementById("ifc-property-menu-root");
 
 createIfcTreeMenu();
-//document.getElementById("ifc-property-menu").style.display = "none";
-//document.getElementById("ifc-tree-menu").style.display = "none";
-
 createCheckboxes();
-//document.getElementById("checkboxes").style.display = "none";
-
-//help info
 createHelpInfo();
-//document.getElementById("helpdoc").style.display = "none";
-
 toolbarTop();
 toolbarBottom();
 
@@ -113220,15 +113191,12 @@ window.ondblclick = async () => {
   if (!result) return;
   const { modelID, id } = result;
   const props = await viewer.IFC.getProperties(modelID, id, true, false);
-  //console.log(props);
-  //console.log(props.psets);
 
   createPropertiesMenu(props);
 
   document.getElementById("ifc-property-menu").style.display = "initial";
   propertiesButton.classList.add("active");
 
-  //works, needs more testing?
   if (clippingPlanesActive) {
     viewer.clipper.createPlane();
   }
@@ -113254,7 +113222,6 @@ clipButton.onclick = () => {
   }
 };
 
-//on right mouse click - remove these events?
 window.onauxclick = () => {
   if (clippingPlanesActive) {
     viewer.clipper.createPlane();
@@ -113269,7 +113236,6 @@ window.onkeydown = (event) => {
   if (event.code === "Delete" && clippingPlanesActive) {
     // viewer.clipper.deletePlane();
     viewer.clipper.deleteAllPlanes();
-    //console.log("delete")
   }
 
   if (event.code === "Delete" && measurementsActive) {
@@ -113441,9 +113407,6 @@ function createSimpleChild(parent, node) {
 
 //IFC properties menu functions
 function createPropertiesMenu(properties) {
-  //console.log(properties);
-
-  //createTabs()
 
   removeAllChildren(propsGUI);
 
